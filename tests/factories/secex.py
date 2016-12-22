@@ -15,10 +15,11 @@ class SecexFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     year = 2016
     month = 11
-    hs_07 = factory.Sequence(lambda n: '%04d' % n)
+    product = factory.Sequence(lambda n: '%04d' % n)
     country = factory.Sequence(lambda n: '%03d' % n)
-    uf_ibge = factory.Sequence(lambda n: '%02d' % n)
-    sh4 = factory.Sequence(lambda n: '%04d' % n)
-    mun_ibge = factory.Sequence(lambda n: '%07d' % n)
+    state = factory.Sequence(lambda n: '%02d' % n)
+    port = factory.Sequence(lambda n: '%04d' % n)
+    municipality = factory.Sequence(lambda n: '%07d' % n)
     value = Decimal(10000)
     kg = Decimal(10000)
+    trade_type = 'import'
