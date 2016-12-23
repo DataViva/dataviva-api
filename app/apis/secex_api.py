@@ -22,16 +22,3 @@ def states():
     query = Secex.query.with_entities(*columns).filter_by(**request.args.to_dict()).group_by(*dimensions)
 
     return jsonify(data=query.all(), headers=['state', 'value', 'kg'])
-
-
-@blueprint.route('/states/products/')
-def states_products():
-    if not set(request.args.keys()).issubset(valid_dimensions):
-        return 'erro', 403
-
-    dimensions = [Secex.state, Secex.product]
-
-    columns = dimensions + [func.sum(Secex.value), func.sum(Secex.kg)]
-    query = Secex.query.with_entities(*columns).filter_by(**request.args.to_dict()).group_by(*dimensions)
-
-    return jsonify(data=query.all(), headers=['state', 'product', 'value', 'kg'])

@@ -12,4 +12,4 @@ flask.json_encoder = ApiJSONEncoder
 db = SQLAlchemy(flask)
 manager = Manager(flask)
 
-register_blueprints(flask, 'api')
+register_blueprints(flask, 'apis')
