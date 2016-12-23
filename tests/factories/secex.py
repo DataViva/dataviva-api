@@ -1,7 +1,6 @@
 import factory
 import logging 
 from random import randint
-from decimal import Decimal
 from app import db
 from app.models.secex import Secex
 
@@ -20,6 +19,6 @@ class SecexFactory(factory.alchemy.SQLAlchemyModelFactory):
     state = factory.Sequence(lambda n: '%02d' % n)
     port = factory.Sequence(lambda n: '%04d' % n)
     municipality = factory.Sequence(lambda n: '%07d' % n)
-    value = Decimal(10000)
-    kg = Decimal(10000)
+    value = 10000
+    kg = 10000
     trade_type = 'import'

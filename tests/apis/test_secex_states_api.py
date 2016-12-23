@@ -22,10 +22,10 @@ class SecexApiTests(BaseTestCase):
         self.assertEqual(len(response.json['data']), 2)
 
     def test_should_sum_secex_states_values(self):
-        state_1_secex = SecexFactory.create_batch(10, state="01", value=5)
+        state_1_secex = SecexFactory.create_batch(10, state="01")
         state_1_values = map(lambda x: x.value, state_1_secex)
 
-        state_2_secex = SecexFactory.create_batch(10, state="02", value=5000)
+        state_2_secex = SecexFactory.create_batch(10, state="02")
         state_2_values = map(lambda x: x.value, state_2_secex)
         
         response = self.client.get("/secex/states/")
