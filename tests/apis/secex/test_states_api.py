@@ -4,15 +4,10 @@ from factories.secex import SecexFactory
 from app.models.secex import Secex
 
 
-class SecexApiTests(BaseTestCase):
+class SecexStatesTests(BaseTestCase):
 
     def tearDown(self):
         Secex.query.delete()
-
-    def test_should_return_10_secex(self):
-        SecexFactory.create_batch(10)
-        response = self.client.get("/secex/")
-        self.assertEqual(len(response.json['data']), 10)
 
     def test_should_return_2_secex_states(self):
         state_1_secex = SecexFactory.create_batch(10, state="01", value=5)
