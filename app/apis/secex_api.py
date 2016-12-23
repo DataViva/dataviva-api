@@ -7,7 +7,7 @@ from app import db
 blueprint = Blueprint('secex_api', __name__, url_prefix='/secex')
 
 @blueprint.route('/<path:path>/')
-def states(path):
+def api(path):
     dimensions = map(singularize, path.split('/'))
 
     if invalid_dimension(request.args.keys()) or invalid_dimension(dimensions):
