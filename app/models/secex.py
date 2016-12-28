@@ -44,5 +44,3 @@ class Secex(db.Model):
     @classmethod
     def value_headers(cls):
         return ['value', 'kg']
-
-
