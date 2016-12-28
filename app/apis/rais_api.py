@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, request, render_template
 from sqlalchemy import func, distinct
 from inflection import singularize
-from app.models.secex import Rais as Model
+from app.models.rais import Rais as Model
 from app import db
 
-blueprint = Blueprint('secex_api', __name__, url_prefix='/secex')
+blueprint = Blueprint('rais_api', __name__, url_prefix='/rais')
 
 @blueprint.route('/<path:path>/')
 def api(path):
