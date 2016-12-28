@@ -6,10 +6,6 @@ from app import db
 
 blueprint = Blueprint('secex_api', __name__, url_prefix='/secex')
 
-@blueprint.route('/sankey/')
-def sankey():
-    return render_template('sankey.html')
-
 @blueprint.route('/<path:path>/')
 def api(path):
     dimensions = map(singularize, path.split('/'))
