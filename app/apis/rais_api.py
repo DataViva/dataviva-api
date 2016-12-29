@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template
 from sqlalchemy import func, distinct
 from inflection import singularize
-from app.models.secex import Secex as Model
+from app.models.secex import Rais as Model
 from app import db
 
 blueprint = Blueprint('secex_api', __name__, url_prefix='/secex')
