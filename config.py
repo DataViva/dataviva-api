@@ -19,6 +19,13 @@ class Development(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = "postgresql:///dataviva"
 
+    S3_ACCESS_KEY = getenv("S3_ACCESS_KEY")
+    S3_SECRET_KEY = getenv("S3_SECRET_KEY")
+
+    REDIS_HOST = getenv("REDIS_HOST")
+    REDIS_PORT = getenv("REDIS_PORT")
+    REDIS_DB = getenv("REDIS_DB")
+    
 
 class Testing(Config):
     DEBUG = True
