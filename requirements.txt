@@ -1,4 +1,4 @@
-boto3==1.4.3
+boto3>=1.3.0
 botocore==1.4.91
 click==6.6
 docutils==0.13.1
@@ -19,9 +19,9 @@ jmespath==0.9.0
 MarkupSafe==0.23
 nose==1.3.7
 numpy==1.11.3
-pandas==0.19.2
+pandas>=0.13.1
 psycopg2>=2.6.2
-python-dateutil==2.6.0
+python-dateutil>=2.5.3
 pytz==2016.10
 redis==2.10.5
 s3transfer==0.1.10
