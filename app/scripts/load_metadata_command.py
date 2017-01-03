@@ -121,12 +121,41 @@ def load_products():
     print "Products loaded."   
 
 
+def load_states():
+    """
+    Rows without ibge_id aren't saving
+    """
+    csv = read_csv_from_s3('redshift/attrs/attrs_uf_ibge_mdic.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['mdic_name','mdic_id','ibge_id'],
+        converters={
+            "ibge_id": str
+        }
+    )  
+    
+    states = {}
+
+    for _, row in df.iterrows():
+        if not row['ibge_id']:
+            continue
+
+        states[row['ibge_id']] = row["mdic_name"]
+        redis.set('states/' + str(row['ibge_id']), pickle.dumps(row["mdic_name"]))
+
+    redis.set('states', pickle.dumps(states))
+
+    print "States loaded."
+
 class LoadMetadataCommand(Command):
     """
     Load the Redis database
     """
 
     def run(self):
-        load_ports()
-        load_countries()
-        load_products()
+        load_states()
+        #load_ports()
+        #load_countries()
+        #load_products()
