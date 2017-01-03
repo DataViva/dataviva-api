@@ -149,6 +149,41 @@ def load_states():
 
     print "States loaded."
 
+
+def load_continent():
+    csv = read_csv_from_s3('redshift/attrs/attrs_continente.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id','country_id','name_en','name_pt']
+        )
+
+    continents = {}
+
+
+    for _, row in df.iterrows():
+
+        if continents.get(row["id"]):
+            continent = continents[row["id"]]
+            continent["countries"].append(row["country_id"])
+        else:
+            continent = {
+                'countries': [
+                    row["country_id"]
+                ],
+                'name_en': row["name_en"],
+                'name_pt': row["name_pt"]
+            }
+
+        continents[row['id']] = continent
+        redis.set('continents/' + str(row['id']), pickle.dumps(continent))
+
+    redis.set('continents', pickle.dumps(continents))
+
+    print "continents loaded."
+    
+
 class LoadMetadataCommand(Command):
     """
     Load the Redis database
@@ -159,3 +194,5 @@ class LoadMetadataCommand(Command):
         load_ports()
         load_countries()
         load_products()
+        load_continent()
+
