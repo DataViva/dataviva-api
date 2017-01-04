@@ -212,10 +212,43 @@ def load_territories():
 
     print "Territories loaded."    
 
+def load_economic_blocks():
+    csv = read_csv_from_s3('redshift/attrs/attrs_bloco_economico.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id','name','country_id'],
+        converters={
+            "country_id": str
+        }
+    )
+    
+    economic_blocks = {}
 
+    for _, row in df.iterrows():
+
+        if economic_blocks.get(row["id"]):
+            economic_block = economic_blocks[row["id"]]
+            economic_block["countries"].append(row["country_id"])
+        else:
+            economic_block = {
+                'name': row["name"],
+                'countries': [
+                    row["country_id"]
+                ]
+            }
+
+        economic_blocks[row['id']] = economic_block
+        redis.set('economic_blocks/' + str(row['id']), pickle.dumps(economic_block))
+
+    redis.set('economic_blocks', pickle.dumps(economic_blocks))
+
+    print "Economic Blocks loaded."
     
 
 class LoadMetadataCommand(Command):
+    
     """
     Load the Redis database
     """
@@ -227,4 +260,5 @@ class LoadMetadataCommand(Command):
         load_products()
         load_continent()
         load_territories()
+        load_economic_blocks()
 
