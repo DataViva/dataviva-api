@@ -181,7 +181,38 @@ def load_continent():
 
     redis.set('continents', pickle.dumps(continents))
 
-    print "continents loaded."
+    print "Continents loaded."
+
+
+def load_territories():
+    csv = read_csv_from_s3('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['territory','microterritory','municipy_id'],
+        converters={
+            "municipy_id": str
+        }
+    )
+
+    territories = {}
+
+    for _, row in df.iterrows():
+        territory = {
+            'territory': row["territory"],
+            'microterritory': row["microterritory"],
+            'municipy_id': row["municipy_id"]
+        }
+
+        territories[row['municipy_id']] = territory
+        redis.set('territories/' + str(row['municipy_id']), pickle.dumps(territory))
+
+    redis.set('territories', pickle.dumps(territories))
+
+    print "Territories loaded."    
+
+
     
 
 class LoadMetadataCommand(Command):
@@ -195,4 +226,5 @@ class LoadMetadataCommand(Command):
         load_countries()
         load_products()
         load_continent()
+        load_territories()
 
