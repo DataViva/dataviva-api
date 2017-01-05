@@ -246,6 +246,54 @@ def load_economic_blocks():
 
     print "Economic Blocks loaded."
     
+    uf_id;uf_name;mesorregiao_id;mesorregiao_name;microrregiao_id;microrregiao_name;municipio_id;municipio_name;municipio_id_mdic
+
+def load_municipalities():
+    csv = read_csv_from_s3('redshift/attrs/attrs_municipios.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['uf_id','uf_name','mesorregion_id','mesorregion_name','microrregion_id','microrregion_name','id','name','municipality_id_mdic'],
+        converters={
+            "uf_id": str,
+            "mesorregion_id": str,
+            "microrregion_id": str,
+            "id": str,
+            "municipality_id_mdic": str
+        }
+    )
+
+    municipalities = {}
+
+    for _, row in df.iterrows():
+
+        if municipalities.get(row["id"]):
+            municipalities = municipality[row["id"]]
+            municipality["states"].append(row["uf_id"])
+        else:
+            municipality = {
+                'name': row["name"],
+                'mesorregion': {
+                    'id': row["mesorregion_id"],
+                    'name': row["mesorregion_name"]
+                },
+                'microrregion': {
+                    'id': row["microrregion_id"],
+                    'name': row["microrregion_name"]
+                },
+                'municipality_id_mdic': row["municipality_id_mdic"],
+                'states': [
+                    row["uf_id"]
+                    ]
+            }    
+
+        municipalities[row['id']] = municipality
+        redis.set('municipalities/' + str(row['id']), pickle.dumps(municipality))
+
+    redis.set('municipalities', pickle.dumps(municipalities))
+
+    print "municipalities loaded."
 
 class LoadMetadataCommand(Command):
     
@@ -261,4 +309,5 @@ class LoadMetadataCommand(Command):
         load_continent()
         load_territories()
         load_economic_blocks()
+        load_municipalities()
 
