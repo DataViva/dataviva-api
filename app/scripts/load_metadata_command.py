@@ -295,6 +295,68 @@ def load_municipalities():
 
     print "municipalities loaded."
 
+
+def load_cnaes():
+    csv = read_csv_from_s3('redshift/attrs/attrs_cnae.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id','name_en','name_pt'],
+        converters={
+            "id": str
+        }
+    )  
+
+    cnaes = {}
+    sections = {}
+    divisions = {}
+    classes = {}
+
+    for _, row in df.iterrows():
+
+        if len(row['id']) == 1:
+            section = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"]
+            }
+
+            redis.set('sections/' + str(row['id']), pickle.dumps(section))
+            sections[row['id']] = section
+
+        elif len(row['id']) == 3:
+            division = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+                'section': row["id"][0]
+            }
+
+            division_id = row['id'][1:3]
+
+            redis.set('divisions/' + str(division_id), pickle.dumps(division))
+            divisions[division_id] = division
+
+        elif len(row['id']) == 6:
+            classe = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+                'section': row["id"][0],
+                'division': row["id"][1:3]
+            }
+
+            classes[row["id"][1:]] = classe
+            redis.set('classes/' + str(id), pickle.dumps(classe))
+
+    redis.set('sections', pickle.dumps(sections))
+    redis.set('divisions', pickle.dumps(divisions))
+    redis.set('classe', pickle.dumps(classes))
+
+
+    print "Cnae loaded."   
+
+
+
+
 class LoadMetadataCommand(Command):
     
     """
@@ -310,4 +372,5 @@ class LoadMetadataCommand(Command):
         load_territories()
         load_economic_blocks()
         load_municipalities()
+        load_cnaes()
 
