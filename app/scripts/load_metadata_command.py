@@ -149,7 +149,216 @@ def load_states():
 
     print "States loaded."
 
+
+def load_continent():
+    csv = read_csv_from_s3('redshift/attrs/attrs_continente.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id','country_id','name_en','name_pt']
+        )
+
+    continents = {}
+
+
+    for _, row in df.iterrows():
+
+        if continents.get(row["id"]):
+            continent = continents[row["id"]]
+            continent["countries"].append(row["country_id"])
+        else:
+            continent = {
+                'countries': [
+                    row["country_id"]
+                ],
+                'name_en': row["name_en"],
+                'name_pt': row["name_pt"]
+            }
+
+        continents[row['id']] = continent
+        redis.set('continents/' + str(row['id']), pickle.dumps(continent))
+
+    redis.set('continents', pickle.dumps(continents))
+
+    print "Continents loaded."
+
+
+def load_territories():
+    csv = read_csv_from_s3('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['territory','microterritory','municipy_id'],
+        converters={
+            "municipy_id": str
+        }
+    )
+
+    territories = {}
+
+    for _, row in df.iterrows():
+        territory = {
+            'territory': row["territory"],
+            'microterritory': row["microterritory"],
+            'municipy_id': row["municipy_id"]
+        }
+
+        territories[row['municipy_id']] = territory
+        redis.set('territories/' + str(row['municipy_id']), pickle.dumps(territory))
+
+    redis.set('territories', pickle.dumps(territories))
+
+    print "Territories loaded."    
+
+def load_economic_blocks():
+    csv = read_csv_from_s3('redshift/attrs/attrs_bloco_economico.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id','name','country_id'],
+        converters={
+            "country_id": str
+        }
+    )
+    
+    economic_blocks = {}
+
+    for _, row in df.iterrows():
+
+        if economic_blocks.get(row["id"]):
+            economic_block = economic_blocks[row["id"]]
+            economic_block["countries"].append(row["country_id"])
+        else:
+            economic_block = {
+                'name': row["name"],
+                'countries': [
+                    row["country_id"]
+                ]
+            }
+
+        economic_blocks[row['id']] = economic_block
+        redis.set('economic_blocks/' + str(row['id']), pickle.dumps(economic_block))
+
+    redis.set('economic_blocks', pickle.dumps(economic_blocks))
+
+    print "Economic Blocks loaded."
+    
+    uf_id;uf_name;mesorregiao_id;mesorregiao_name;microrregiao_id;microrregiao_name;municipio_id;municipio_name;municipio_id_mdic
+
+def load_municipalities():
+    csv = read_csv_from_s3('redshift/attrs/attrs_municipios.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['uf_id','uf_name','mesorregion_id','mesorregion_name','microrregion_id','microrregion_name','id','name','municipality_id_mdic'],
+        converters={
+            "uf_id": str,
+            "mesorregion_id": str,
+            "microrregion_id": str,
+            "id": str,
+            "municipality_id_mdic": str
+        }
+    )
+
+    municipalities = {}
+
+    for _, row in df.iterrows():
+
+        if municipalities.get(row["id"]):
+            municipalities = municipality[row["id"]]
+            municipality["states"].append(row["uf_id"])
+        else:
+            municipality = {
+                'name': row["name"],
+                'mesorregion': {
+                    'id': row["mesorregion_id"],
+                    'name': row["mesorregion_name"]
+                },
+                'microrregion': {
+                    'id': row["microrregion_id"],
+                    'name': row["microrregion_name"]
+                },
+                'municipality_id_mdic': row["municipality_id_mdic"],
+                'states': [
+                    row["uf_id"]
+                    ]
+            }    
+
+        municipalities[row['id']] = municipality
+        redis.set('municipalities/' + str(row['id']), pickle.dumps(municipality))
+
+    redis.set('municipalities', pickle.dumps(municipalities))
+
+    print "municipalities loaded."
+
+
+def load_cnaes():
+    csv = read_csv_from_s3('redshift/attrs/attrs_cnae.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id','name_en','name_pt'],
+        converters={
+            "id": str
+        }
+    )  
+
+    cnaes = {}
+    sections = {}
+    divisions = {}
+    classes = {}
+
+    for _, row in df.iterrows():
+
+        if len(row['id']) == 1:
+            section = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"]
+            }
+
+            redis.set('sections/' + str(row['id']), pickle.dumps(section))
+            sections[row['id']] = section
+
+        elif len(row['id']) == 3:
+            division = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+                'section': row["id"][0]
+            }
+
+            division_id = row['id'][1:3]
+
+            redis.set('divisions/' + str(division_id), pickle.dumps(division))
+            divisions[division_id] = division
+
+        elif len(row['id']) == 6:
+            classe = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+                'section': row["id"][0],
+                'division': row["id"][1:3]
+            }
+
+            classes[row["id"][1:]] = classe
+            redis.set('classes/' + str(id), pickle.dumps(classe))
+
+    redis.set('sections', pickle.dumps(sections))
+    redis.set('divisions', pickle.dumps(divisions))
+    redis.set('classe', pickle.dumps(classes))
+
+
+    print "Cnae loaded."   
+
+
+
+
 class LoadMetadataCommand(Command):
+    
     """
     Load the Redis database
     """
@@ -159,3 +368,9 @@ class LoadMetadataCommand(Command):
         load_ports()
         load_countries()
         load_products()
+        load_continent()
+        load_territories()
+        load_economic_blocks()
+        load_municipalities()
+        load_cnaes()
+
