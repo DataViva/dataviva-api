@@ -44,8 +44,9 @@ class Rais(db.Model):
             func.avg(cls.age),
             func.avg(cls.average_monthly_wage),
             func.sum(cls.wage_received),
+            func.count(cls.employee),
         ]
 
     @classmethod
     def value_headers(cls):
-        return ['age', 'wage_received', 'average_monthly_wage']
+        return ['age', 'wage_received', 'average_monthly_wage', 'jobs']
