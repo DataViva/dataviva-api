@@ -5,6 +5,8 @@ class Rais(db.Model):
     __tablename__        = 'rais'
     ocupation            = Column(String(6), primary_key=True)
     cnae                 = Column(String(5), primary_key=True)
+    cnae_section         = Column(String(1), primary_key=True)
+    cnae_division        = Column(String(2), primary_key=True)
     literacy             = Column(String(1), primary_key=True)
     establishment        = Column(String(14), primary_key=True)
     simple               = Column(String(1), primary_key=True)
@@ -23,6 +25,8 @@ class Rais(db.Model):
         return [
             'ocupation',
             'cnae',
+            'cnae_section',
+            'cnae_division',
             'literacy',
             'establishment',
             'simple',
