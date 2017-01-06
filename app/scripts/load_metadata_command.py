@@ -245,8 +245,6 @@ def load_economic_blocks():
     redis.set('economic_blocks', pickle.dumps(economic_blocks))
 
     print "Economic Blocks loaded."
-    
-    uf_id;uf_name;mesorregiao_id;mesorregiao_name;microrregiao_id;microrregiao_name;municipio_id;municipio_name;municipio_id_mdic
 
 def load_municipalities():
     csv = read_csv_from_s3('redshift/attrs/attrs_municipios.csv')
@@ -254,7 +252,7 @@ def load_municipalities():
         csv,
         sep=';',
         header=0,
-        names=['uf_id','uf_name','mesorregion_id','mesorregion_name','microrregion_id','microrregion_name','id','name','municipality_id_mdic'],
+        names=['uf_id', 'uf_name', 'mesorregion_id', 'mesorregion_name', 'microrregion_id', 'microrregion_name', 'id', 'name', 'municipality_id_mdic'],
         converters={
             "uf_id": str,
             "mesorregion_id": str,
@@ -285,8 +283,8 @@ def load_municipalities():
                 'municipality_id_mdic': row["municipality_id_mdic"],
                 'states': [
                     row["uf_id"]
-                    ]
-            }    
+                ]
+            }
 
         municipalities[row['id']] = municipality
         redis.set('municipalities/' + str(row['id']), pickle.dumps(municipality))
@@ -306,7 +304,14 @@ def load_cnaes():
         converters={
             "id": str
         }
-    )  
+    )
+
+    df2 = pd.DataFrame([
+        ['0', 'Undefined', 'Não definido' ], 
+        ['00', 'Undefined', 'Não definido' ],
+    ], columns=['id','name_en','name_pt'])
+
+    df = df.append(df2, ignore_index=True)
 
     cnaes = {}
     sections = {}
@@ -321,7 +326,7 @@ def load_cnaes():
                 'name_en': row["name_en"]
             }
 
-            redis.set('sections/' + str(row['id']), pickle.dumps(section))
+            redis.set('cnae_sections/' + str(row['id']), pickle.dumps(section))
             sections[row['id']] = section
 
         elif len(row['id']) == 3:
@@ -333,7 +338,7 @@ def load_cnaes():
 
             division_id = row['id'][1:3]
 
-            redis.set('divisions/' + str(division_id), pickle.dumps(division))
+            redis.set('cnae_divisions/' + str(division_id), pickle.dumps(division))
             divisions[division_id] = division
 
         elif len(row['id']) == 6:
@@ -345,11 +350,11 @@ def load_cnaes():
             }
 
             classes[row["id"][1:]] = classe
-            redis.set('classes/' + str(id), pickle.dumps(classe))
+            redis.set('cnae_classes/' + str(id), pickle.dumps(classe))
 
-    redis.set('sections', pickle.dumps(sections))
-    redis.set('divisions', pickle.dumps(divisions))
-    redis.set('classe', pickle.dumps(classes))
+    redis.set('cnae_sections', pickle.dumps(sections))
+    redis.set('cnae_divisions', pickle.dumps(divisions))
+    redis.set('cnae_classe', pickle.dumps(classes))
 
 
     print "Cnae loaded."   
