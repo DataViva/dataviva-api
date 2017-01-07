@@ -14,7 +14,4 @@ def api(data, id=None):
     if id:
         data = data + '/' + id
 
-    content = {
-        path.basename(data): pickle.loads(redis.get(data))
-    }
-    return jsonify(**content)
+    return jsonify(pickle.loads(redis.get(data)))
