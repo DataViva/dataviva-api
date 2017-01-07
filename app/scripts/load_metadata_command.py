@@ -360,6 +360,29 @@ def load_cnaes():
     print "Cnae loaded."   
 
 
+def load_genders():
+    csv = read_csv_from_s3('redshift/attrs/attrs_generos.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'name_pt', 'name_en']
+    )
+
+    genders = {}
+
+    for _, row in df.iterrows():
+        gender = {
+            'name_pt': row["name_pt"],
+            'name_en': row["name_en"]
+        }
+
+        genders[row['id']] = gender
+        redis.set('genders/' + str(row['id']), pickle.dumps(gender))
+
+    redis.set('genders', pickle.dumps(genders))
+
+    print "Genders loaded."
 
 
 class LoadMetadataCommand(Command):
@@ -378,4 +401,5 @@ class LoadMetadataCommand(Command):
         load_economic_blocks()
         load_municipalities()
         load_cnaes()
+        load_genders()
 
