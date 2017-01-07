@@ -1,12 +1,19 @@
 from flask import Blueprint, jsonify, request
+from inflection import singularize
 from app import redis
 from os import path
 import pickle
 
 blueprint = Blueprint('metadata_api', __name__, url_prefix='/metadata')
 
-@blueprint.route('/<path:data>')
-def api(data):
+@blueprint.route('/<string:data>/<string:id>')
+@blueprint.route('/<string:data>')
+def api(data, id=None):
+    data = singularize(data)
+
+    if id:
+        data = data + '/' + id
+
     content = {
         path.basename(data): pickle.loads(redis.get(data))
     }

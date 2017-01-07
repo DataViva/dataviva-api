@@ -33,9 +33,9 @@ def load_ports():
 
     for index, row in df.iterrows():
         ports[row['id']] = row["name"]
-        redis.set('ports/' + str(row['id']), pickle.dumps(row["name"]))
+        redis.set('port/' + str(row['id']), pickle.dumps(row["name"]))
 
-    redis.set('ports', pickle.dumps(ports))
+    redis.set('port', pickle.dumps(ports))
 
     print "Ports loaded."
 
@@ -57,9 +57,9 @@ def load_countries():
         }
 
         countries[row['id']] = country
-        redis.set('countries/' + str(row['id']), pickle.dumps(country))
+        redis.set('country/' + str(row['id']), pickle.dumps(country))
 
-    redis.set('countries', pickle.dumps(countries))
+    redis.set('country', pickle.dumps(countries))
 
     print "Countries loaded."
 
@@ -88,7 +88,7 @@ def load_products():
                 'name_en': row["name_en"]
             }
 
-            redis.set('sections/' + str(row['id']), pickle.dumps(section))
+            redis.set('product_section/' + str(row['id']), pickle.dumps(section))
             sections[row['id']] = section
 
         elif row['profundidade'] == 'Capítulo':
@@ -98,7 +98,7 @@ def load_products():
                 'section': row["id"][:2]
             }
 
-            redis.set('chapters/' + str(row['id']), pickle.dumps(chapter))
+            redis.set('product_chapter/' + str(row['id']), pickle.dumps(chapter))
             chapters[row["id"]] = chapter
 
         else:
@@ -112,11 +112,11 @@ def load_products():
             product_id = row['id'][2:]
 
             products[product_id] = product
-            redis.set('products/' + str(product_id), pickle.dumps(product))
+            redis.set('product/' + str(product_id), pickle.dumps(product))
 
-    redis.set('products', pickle.dumps(products))
-    redis.set('sections', pickle.dumps(sections))
-    redis.set('chapters', pickle.dumps(chapters))
+    redis.set('product', pickle.dumps(products))
+    redis.set('product_section', pickle.dumps(sections))
+    redis.set('product_chapter', pickle.dumps(chapters))
 
     print "Products loaded."   
 
@@ -143,9 +143,9 @@ def load_states():
             continue
 
         states[row['ibge_id']] = row["mdic_name"]
-        redis.set('states/' + str(row['ibge_id']), pickle.dumps(row["mdic_name"]))
+        redis.set('state/' + str(row['ibge_id']), pickle.dumps(row["mdic_name"]))
 
-    redis.set('states', pickle.dumps(states))
+    redis.set('state', pickle.dumps(states))
 
     print "States loaded."
 
@@ -177,9 +177,9 @@ def load_continent():
             }
 
         continents[row['id']] = continent
-        redis.set('continents/' + str(row['id']), pickle.dumps(continent))
+        redis.set('continent/' + str(row['id']), pickle.dumps(continent))
 
-    redis.set('continents', pickle.dumps(continents))
+    redis.set('continent', pickle.dumps(continents))
 
     print "Continents loaded."
 
@@ -206,9 +206,9 @@ def load_territories():
         }
 
         territories[row['municipy_id']] = territory
-        redis.set('territories/' + str(row['municipy_id']), pickle.dumps(territory))
+        redis.set('territory/' + str(row['municipy_id']), pickle.dumps(territory))
 
-    redis.set('territories', pickle.dumps(territories))
+    redis.set('territory', pickle.dumps(territories))
 
     print "Territories loaded."    
 
@@ -240,9 +240,9 @@ def load_economic_blocks():
             }
 
         economic_blocks[row['id']] = economic_block
-        redis.set('economic_blocks/' + str(row['id']), pickle.dumps(economic_block))
+        redis.set('economic_block/' + str(row['id']), pickle.dumps(economic_block))
 
-    redis.set('economic_blocks', pickle.dumps(economic_blocks))
+    redis.set('economic_block', pickle.dumps(economic_blocks))
 
     print "Economic Blocks loaded."
 
@@ -287,11 +287,11 @@ def load_municipalities():
             }
 
         municipalities[row['id']] = municipality
-        redis.set('municipalities/' + str(row['id']), pickle.dumps(municipality))
+        redis.set('municipality/' + str(row['id']), pickle.dumps(municipality))
 
-    redis.set('municipalities', pickle.dumps(municipalities))
+    redis.set('municipality', pickle.dumps(municipalities))
 
-    print "municipalities loaded."
+    print "Municipalities loaded."
 
 
 def load_cnaes():
@@ -326,7 +326,7 @@ def load_cnaes():
                 'name_en': row["name_en"]
             }
 
-            redis.set('cnae_sections/' + str(row['id']), pickle.dumps(section))
+            redis.set('cnae_section/' + str(row['id']), pickle.dumps(section))
             sections[row['id']] = section
 
         elif len(row['id']) == 3:
@@ -338,7 +338,7 @@ def load_cnaes():
 
             division_id = row['id'][1:3]
 
-            redis.set('cnae_divisions/' + str(division_id), pickle.dumps(division))
+            redis.set('cnae_division/' + str(division_id), pickle.dumps(division))
             divisions[division_id] = division
 
         elif len(row['id']) == 6:
@@ -350,14 +350,14 @@ def load_cnaes():
             }
 
             classes[row["id"][1:]] = classe
-            redis.set('cnae_classes/' + str(id), pickle.dumps(classe))
+            redis.set('cnae/' + str(id), pickle.dumps(classe))
 
-    redis.set('cnae_sections', pickle.dumps(sections))
-    redis.set('cnae_divisions', pickle.dumps(divisions))
-    redis.set('cnae_classe', pickle.dumps(classes))
+    redis.set('cnae', pickle.dumps(classes))
+    redis.set('cnae_division', pickle.dumps(divisions))
+    redis.set('cnae_section', pickle.dumps(sections))
 
 
-    print "Cnae loaded."   
+    print "CNAEs loaded."   
 
 
 def load_genders():
@@ -378,9 +378,9 @@ def load_genders():
         }
 
         genders[row['id']] = gender
-        redis.set('genders/' + str(row['id']), pickle.dumps(gender))
+        redis.set('gender/' + str(row['id']), pickle.dumps(gender))
 
-    redis.set('genders', pickle.dumps(genders))
+    redis.set('gender', pickle.dumps(genders))
 
     print "Genders loaded."
 
@@ -402,4 +402,3 @@ class LoadMetadataCommand(Command):
         load_municipalities()
         load_cnaes()
         load_genders()
-
