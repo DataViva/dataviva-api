@@ -3,10 +3,13 @@ from sqlalchemy import func, distinct
 from inflection import singularize
 from app.models.rais import Rais as Model
 from app import db
+from app import cache
+from app.helpers.cache_helper import api_cache_key
 
 blueprint = Blueprint('rais_api', __name__, url_prefix='/rais')
 
 @blueprint.route('/<path:path>/')
+@cache.cached(key_prefix=api_cache_key("rais"))
 def api(path):
     dimensions = map(singularize, path.split('/'))
     if invalid_dimension(dimensions):
