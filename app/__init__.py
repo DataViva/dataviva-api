@@ -15,7 +15,7 @@ flask.json_encoder = ApiJSONEncoder
 db = SQLAlchemy(flask)
 redis = Redis(flask)
 manager = Manager(flask)
-cors = CORS(flask, resources={"*": {"origins": "*"}})
+cors = CORS(flask)
 cache = Cache(flask, config={
     'CACHE_TYPE': 'redis',
     'CACHE_KEY_PREFIX': 'dvapi',
