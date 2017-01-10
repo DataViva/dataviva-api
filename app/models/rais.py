@@ -3,7 +3,7 @@ from app import db
 
 class Rais(db.Model):
     __tablename__        = 'rais'
-    ocupation            = Column(String(6), primary_key=True)
+    occupation           = Column(String(6), primary_key=True)
     cnae                 = Column(String(5), primary_key=True)
     cnae_section         = Column(String(1), primary_key=True)
     cnae_division        = Column(String(2), primary_key=True)
@@ -23,7 +23,7 @@ class Rais(db.Model):
     @classmethod
     def dimensions(cls):
         return [
-            'ocupation',
+            'occupation',
             'cnae',
             'cnae_section',
             'cnae_division',
