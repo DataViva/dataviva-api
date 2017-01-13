@@ -31,9 +31,13 @@ def load_ports():
 
     ports = {}
 
-    for index, row in df.iterrows():
-        ports[row['id']] = row["name"]
-        redis.set('port/' + str(row['id']), pickle.dumps(row["name"]))
+    for _, row in df.iterrows():
+        port = {
+            'name_pt': row["name"],
+            'name_en': row["name"]
+        }
+        ports[row['id']] = port
+        redis.set('port/' + str(row['id']), pickle.dumps(port))
 
     redis.set('port', pickle.dumps(ports))
 
