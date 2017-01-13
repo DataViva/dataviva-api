@@ -310,17 +310,20 @@ def load_cnaes():
         }
     )
 
-    df2 = pd.DataFrame([
-        ['0', 'Undefined', 'Não definido' ], 
-        ['00', 'Undefined', 'Não definido' ],
-    ], columns=['id','name_en','name_pt'])
-
-    df = df.append(df2, ignore_index=True)
-
     cnaes = {}
     sections = {}
     divisions = {}
     classes = {}
+
+    classes['-1'] = {
+        'name_pt': 'Undefined',
+        'name_en': 'Não definido'
+    }
+
+    sections['0'] = {
+        'name_pt': 'Undefined',
+        'name_en': 'Não definido'
+    }
 
     for _, row in df.iterrows():
 
