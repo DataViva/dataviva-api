@@ -275,7 +275,8 @@ def load_municipalities():
             municipality["states"].append(row["uf_id"])
         else:
             municipality = {
-                'name': row["name"],
+                'name_pt': row["name"],
+                'name_en': row["name"],
                 'mesorregion': {
                     'id': row["mesorregion_id"],
                     'name': row["mesorregion_name"]
