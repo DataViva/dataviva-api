@@ -357,7 +357,32 @@ def load_cnaes():
     redis.set('cnae_classe', pickle.dumps(classes))
 
 
-    print "Cnae loaded."   
+    print "Cnae loaded." 
+
+def load_ethnicities():
+    csv = read_csv_from_s3('redshift/attrs/attrs_etnias.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'name_en', 'name_pt']
+    )
+
+    ethnicities = {}
+
+    for _, row in df.iterrows():
+        ethnicity = {
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"]
+        }
+
+        ethnicities[row['id']] = ethnicity
+        redis.set('ethnicities/' + str(row['id']), pickle.dumps(ethnicity))
+
+    redis.set('ethnicities', pickle.dumps(ethnicities))
+
+    print "ethnicities loaded."
+
 
 
 
@@ -378,4 +403,5 @@ class LoadMetadataCommand(Command):
         load_economic_blocks()
         load_municipalities()
         load_cnaes()
+        load_ethnicities()
 
