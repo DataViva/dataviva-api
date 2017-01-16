@@ -407,6 +407,77 @@ def load_literacities():
 
     print "literacities loaded."
 
+def load_simples():
+    csv = read_csv_from_s3('redshift/attrs/attrs_simples.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'name_en', 'name_pt']
+        )
+
+    simples = {}
+
+    for _, row in df.iterrows():
+        simple = {
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"]
+        }
+
+        simples[row['id']] = simple
+        redis.set('simples/' + str(row['id']), pickle.dumps(simple))
+
+    redis.set('simples', pickle.dumps(simples))
+
+    print "simples loaded."
+
+def load_legal_nature():
+    csv = read_csv_from_s3('redshift/attrs/attrs_natureza_juridica.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'name_en', 'name_pt']
+        )
+
+    legal_natures = {}
+
+    for _, row in df.iterrows():
+        legal_nature = {
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"]
+        }
+
+        legal_natures[row['id']] = legal_nature
+        redis.set('legal_natures/' + str(row['id']), pickle.dumps(legal_nature))
+
+    redis.set('legal_natures', pickle.dumps(legal_natures))
+
+    print "legal_natures loaded."
+
+def load_establishment_size():
+    csv = read_csv_from_s3('redshift/attrs/attrs_tam_estab.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'name_en', 'name_pt']
+        )
+
+    establishment_sizes = {}
+
+    for _, row in df.iterrows():
+        establishment_size = {
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"]
+        }
+
+        establishment_sizes[row['id']] = establishment_size
+        redis.set('establishment_sizes/' + str(row['id']), pickle.dumps(establishment_size))
+
+    redis.set('establishment_sizes', pickle.dumps(establishment_sizes))
+
+    print "establishment sizes loaded."
 
 
 class LoadMetadataCommand(Command):
@@ -427,4 +498,7 @@ class LoadMetadataCommand(Command):
         load_cnaes()
         load_ethnicities()
         load_literacities()
+        load_simples()
+        load_legal_nature()
+        load_establishment_size()
 
