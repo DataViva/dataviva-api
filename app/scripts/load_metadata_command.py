@@ -383,7 +383,29 @@ def load_ethnicities():
 
     print "ethnicities loaded."
 
+def load_literacities():
+    csv = read_csv_from_s3('redshift/attrs/attrs_escolaridade.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'name_en', 'name_pt']
+        )
 
+    literacities = {}
+
+    for _, row in df.iterrows():
+        literacy = {
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"]
+        }
+
+        literacities[row['id']] = literacy
+        redis.set('literacities/' + str(row['id']), pickle.dumps(literacy))
+
+    redis.set('literacities', pickle.dumps(literacities))
+
+    print "literacities loaded."
 
 
 
@@ -404,4 +426,5 @@ class LoadMetadataCommand(Command):
         load_municipalities()
         load_cnaes()
         load_ethnicities()
+        load_literacities()
 
