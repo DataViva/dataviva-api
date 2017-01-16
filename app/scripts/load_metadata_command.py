@@ -49,7 +49,10 @@ def load_countries():
         csv,
         sep=';',
         header=0,
-        names=['id', 'name_pt', 'name_en']
+        names=['id', 'name_pt', 'name_en'],
+        converters={
+            "id": str
+        }
     )
 
     countries = {}
