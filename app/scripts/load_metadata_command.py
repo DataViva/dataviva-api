@@ -23,11 +23,11 @@ def read_csv_from_s3(filename):
 def load_ports():
     csv = read_csv_from_s3('redshift/attrs/attrs_porto.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name']
-    )
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name']
+        )
 
     ports = {}
 
@@ -46,14 +46,14 @@ def load_ports():
 def load_countries():
     csv = read_csv_from_s3('redshift/attrs/attrs_wld.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_pt', 'name_en'],
-        converters={
-            "id": str
-        }
-    )
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_pt', 'name_en'],
+            converters={
+                "id": str
+            }
+        )
 
     countries = {}
 
@@ -70,18 +70,17 @@ def load_countries():
 
     print "Countries loaded."
 
-
 def load_products():
     csv = read_csv_from_s3('redshift/attrs/attrs_hs.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id','name_pt','name_en','profundidade_id','profundidade'],
-        converters={
-            "id": str
-        }
-    )  
+            csv,
+            sep=';',
+            header=0,
+            names=['id','name_pt','name_en','profundidade_id','profundidade'],
+            converters={
+                "id": str
+            }
+        )  
 
     products = {}
     sections = {}
@@ -127,24 +126,22 @@ def load_products():
 
     print "Products loaded."   
 
-
 def load_states():
     """
     Rows without ibge_id aren't saving
     """
     csv = read_csv_from_s3('redshift/attrs/attrs_uf_ibge_mdic.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['mdic_name','mdic_id','ibge_id'],
-        converters={
-            "ibge_id": str
-        }
-    )  
+            csv,
+            sep=';',
+            header=0,
+            names=['mdic_name', 'mdic_id', 'ibge_id'],
+            converters={
+                "ibge_id": str
+            }
+        )  
 
     states = {}
-
 
     for _, row in df.iterrows():  
         state = {
@@ -161,14 +158,13 @@ def load_states():
 
     print "States loaded."
 
-
 def load_continent():
     csv = read_csv_from_s3('redshift/attrs/attrs_continente.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id','country_id','name_en','name_pt']
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'country_id', 'name_en', 'name_pt']
         )
 
     continents = {}
@@ -194,7 +190,6 @@ def load_continent():
     redis.set('continent', pickle.dumps(continents))
 
     print "Continents loaded."
-
 
 def load_territories():
     csv = read_csv_from_s3('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
@@ -227,14 +222,14 @@ def load_territories():
 def load_economic_blocks():
     csv = read_csv_from_s3('redshift/attrs/attrs_bloco_economico.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id','name','country_id'],
-        converters={
-            "country_id": str
-        }
-    )
+            csv,
+            sep=';',
+            header=0,
+            names=['id','name','country_id'],
+            converters={
+                "country_id": str
+            }
+        )
     
     economic_blocks = {}
 
@@ -307,7 +302,6 @@ def load_municipalities():
 
     print "Municipalities loaded."
 
-
 def load_cnaes():
     csv = read_csv_from_s3('redshift/attrs/attrs_cnae.csv')
     df = pd.read_csv(
@@ -375,15 +369,14 @@ def load_cnaes():
 
     print "CNAEs loaded."
 
-
 def load_ethnicities():
     csv = read_csv_from_s3('redshift/attrs/attrs_etnias.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_en', 'name_pt']
-    )
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt']
+        )
 
     ethnicities = {}
 
@@ -394,19 +387,19 @@ def load_ethnicities():
         }
 
         ethnicities[row['id']] = ethnicity
-        redis.set('ethnicities/' + str(row['id']), pickle.dumps(ethnicity))
+        redis.set('ethnicity/' + str(row['id']), pickle.dumps(ethnicity))
 
-    redis.set('ethnicities', pickle.dumps(ethnicities))
+    redis.set('ethnicity', pickle.dumps(ethnicities))
 
     print "ethnicities loaded."
 
 def load_literacities():
     csv = read_csv_from_s3('redshift/attrs/attrs_escolaridade.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_en', 'name_pt']
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt']
         )
 
     literacities = {}
@@ -418,19 +411,19 @@ def load_literacities():
         }
 
         literacities[row['id']] = literacy
-        redis.set('literacities/' + str(row['id']), pickle.dumps(literacy))
+        redis.set('literacy/' + str(row['id']), pickle.dumps(literacy))
 
-    redis.set('literacities', pickle.dumps(literacities))
+    redis.set('literacy', pickle.dumps(literacities))
 
     print "literacities loaded."
 
 def load_simples():
     csv = read_csv_from_s3('redshift/attrs/attrs_simples.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_en', 'name_pt']
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt']
         )
 
     simples = {}
@@ -442,19 +435,19 @@ def load_simples():
         }
 
         simples[row['id']] = simple
-        redis.set('simples/' + str(row['id']), pickle.dumps(simple))
+        redis.set('simple/' + str(row['id']), pickle.dumps(simple))
 
-    redis.set('simples', pickle.dumps(simples))
+    redis.set('simple', pickle.dumps(simples))
 
     print "simples loaded."
 
 def load_legal_nature():
     csv = read_csv_from_s3('redshift/attrs/attrs_natureza_juridica.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_en', 'name_pt']
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt']
         )
 
     legal_natures = {}
@@ -466,19 +459,19 @@ def load_legal_nature():
         }
 
         legal_natures[row['id']] = legal_nature
-        redis.set('legal_natures/' + str(row['id']), pickle.dumps(legal_nature))
+        redis.set('legal_nature/' + str(row['id']), pickle.dumps(legal_nature))
 
-    redis.set('legal_natures', pickle.dumps(legal_natures))
+    redis.set('legal_nature', pickle.dumps(legal_natures))
 
     print "legal_natures loaded."
 
 def load_establishment_size():
     csv = read_csv_from_s3('redshift/attrs/attrs_tam_estab.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_en', 'name_pt']
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt']
         )
 
     establishment_sizes = {}
@@ -490,21 +483,20 @@ def load_establishment_size():
         }
 
         establishment_sizes[row['id']] = establishment_size
-        redis.set('establishment_sizes/' + str(row['id']), pickle.dumps(establishment_size))
+        redis.set('establishment_size/' + str(row['id']), pickle.dumps(establishment_size))
 
-    redis.set('establishment_sizes', pickle.dumps(establishment_sizes))
+    redis.set('establishment_size', pickle.dumps(establishment_sizes))
 
     print "establishment sizes loaded."
-
 
 def load_genders():
     csv = read_csv_from_s3('redshift/attrs/attrs_generos.csv')
     df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_pt', 'name_en']
-    )
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_pt', 'name_en']
+        )
 
     genders = {}
 
