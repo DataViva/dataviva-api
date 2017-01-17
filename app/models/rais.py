@@ -12,7 +12,7 @@ class Rais(db.Model):
     simple               = Column(String(1), primary_key=True)
     municipality         = Column(String(7), primary_key=True)
     employee             = Column(String(11), primary_key=True)
-    color                = Column(String(2), primary_key=True)
+    ethnicity            = Column(String(2), primary_key=True)
     gender               = Column(String(1), primary_key=True)
     establishment_size   = Column(String(1), primary_key=True)
     year                 = Column(Integer, primary_key=True)
@@ -32,7 +32,7 @@ class Rais(db.Model):
             'simple',
             'municipality',
             'employee',
-            'color',
+            'ethnicity',
             'gender',
             'establishment_size',
             'year',
