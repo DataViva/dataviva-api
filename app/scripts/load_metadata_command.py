@@ -391,7 +391,7 @@ def load_ethnicities():
 
     redis.set('ethnicity', pickle.dumps(ethnicities))
 
-    print "ethnicities loaded."
+    print "Ethnicities loaded."
 
 def load_literacities():
     csv = read_csv_from_s3('redshift/attrs/attrs_escolaridade.csv')
@@ -415,7 +415,7 @@ def load_literacities():
 
     redis.set('literacy', pickle.dumps(literacities))
 
-    print "literacities loaded."
+    print "Literacities loaded."
 
 def load_simples():
     csv = read_csv_from_s3('redshift/attrs/attrs_simples.csv')
@@ -439,7 +439,7 @@ def load_simples():
 
     redis.set('simple', pickle.dumps(simples))
 
-    print "simples loaded."
+    print "Simples loaded."
 
 def load_legal_nature():
     csv = read_csv_from_s3('redshift/attrs/attrs_natureza_juridica.csv')
@@ -463,7 +463,7 @@ def load_legal_nature():
 
     redis.set('legal_nature', pickle.dumps(legal_natures))
 
-    print "legal_natures loaded."
+    print "Legal Natures loaded."
 
 def load_establishment_size():
     csv = read_csv_from_s3('redshift/attrs/attrs_tam_estab.csv')
@@ -487,7 +487,7 @@ def load_establishment_size():
 
     redis.set('establishment_size', pickle.dumps(establishment_sizes))
 
-    print "establishment sizes loaded."
+    print "Establishment Sizes loaded."
 
 def load_genders():
     csv = read_csv_from_s3('redshift/attrs/attrs_generos.csv')
