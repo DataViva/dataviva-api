@@ -49,4 +49,4 @@ class Rais(db.Model):
 
     @classmethod
     def value_headers(cls):
-        return ['age', 'wage_received', 'average_monthly_wage', 'jobs']
+        return ['age', 'average_monthly_wage', 'wage_received', 'jobs']
