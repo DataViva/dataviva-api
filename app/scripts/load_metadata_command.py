@@ -260,43 +260,37 @@ def load_municipalities():
         csv,
         sep=';',
         header=0,
-        names=['uf_id', 'uf_name', 'mesorregion_id', 'mesorregion_name', 'microrregion_id', 'microrregion_name', 'id', 'name', 'municipality_id_mdic'],
+        names=['uf_id', 'uf_name', 'mesorregiao_id', 'mesorregiao_name', 'microrregiao_id', 'microrregiao_name', 'municipio_id', 'municipio_name', 'municipio_id_mdic'],
         converters={
             "uf_id": str,
-            "mesorregion_id": str,
-            "microrregion_id": str,
-            "id": str,
-            "municipality_id_mdic": str
+            "mesorregiao_id": str,
+            "microrregiao_id": str,
+            "municipio_id": str
         }
     )
 
     municipalities = {}
 
     for _, row in df.iterrows():
-
-        if municipalities.get(row["id"]):
-            municipalities = municipality[row["id"]]
-            municipality["states"].append(row["uf_id"])
-        else:
-            municipality = {
-                'name_pt': row["name"],
-                'name_en': row["name"],
-                'mesorregion': {
-                    'id': row["mesorregion_id"],
-                    'name': row["mesorregion_name"]
-                },
-                'microrregion': {
-                    'id': row["microrregion_id"],
-                    'name': row["microrregion_name"]
-                },
-                'municipality_id_mdic': row["municipality_id_mdic"],
-                'states': [
-                    row["uf_id"]
-                ]
+        municipality = {
+            'name_pt': row["municipio_name"],
+            'name_en': row["municipio_name"],
+            'mesoregion': {
+                'id': row["mesorregiao_id"],
+                'name': row["mesorregiao_name"]
+            },
+            'microregion': {
+                'id': row["microrregiao_id"],
+                'name': row["microrregiao_name"]
+            },
+            'state': {
+                'id': row["uf_id"],
+                'name': row["uf_name"]
             }
+        }
 
-        municipalities[row['id']] = municipality
-        redis.set('municipality/' + str(row['id']), pickle.dumps(municipality))
+        municipalities[row['municipio_id']] = municipality
+        redis.set('municipality/' + str(row['municipio_id']), pickle.dumps(municipality))
 
     redis.set('municipality', pickle.dumps(municipalities))
 
