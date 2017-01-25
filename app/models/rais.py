@@ -9,7 +9,7 @@ class Rais(db.Model):
     cnae_division        = Column(String(2), primary_key=True)
     literacy             = Column(String(1), primary_key=True)
     establishment        = Column(String(14), primary_key=True)
-    simple               = Column(String(1), primary_key=True)
+    simples               = Column(String(1), primary_key=True)
     municipality         = Column(String(7), primary_key=True)
     employee             = Column(String(11), primary_key=True)
     ethnicity            = Column(String(2), primary_key=True)
@@ -29,7 +29,7 @@ class Rais(db.Model):
             'cnae_division',
             'literacy',
             'establishment',
-            'simple',
+            'simples',
             'municipality',
             'employee',
             'ethnicity',
