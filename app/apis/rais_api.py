@@ -1,8 +1,7 @@
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request
 from sqlalchemy import func, distinct
 from inflection import singularize
 from app.models.rais import Rais as Model
-from app import db
 from app import cache
 from app.helpers.cache_helper import api_cache_key
 
