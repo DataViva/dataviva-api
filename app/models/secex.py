@@ -38,9 +38,12 @@ class Secex(db.Model):
         ]
 
     @classmethod
-    def agg_values(cls):
-        return [func.sum(cls.value), func.sum(cls.kg)]
+    def aggregate(cls, value):
+        return {
+            'value': func.sum(cls.value),
+            'kg': func.sum(cls.kg),
+        }[value]
 
     @classmethod
-    def value_headers(cls):
+    def values(cls):
         return ['value', 'kg']
