@@ -14,18 +14,24 @@ def api(path):
     dimensions = map(singularize, path.split('/'))
     if invalid_dimension(dimensions):
         return 'Error', 403
-        
+
     filters = {k: v for k, v in request.args.to_dict().iteritems() if k in Model.dimensions()}
     counts = [c for c in map(singularize, request.args.getlist('count')) if c in Model.dimensions()]
+    values = get_values(request)
 
-    count_columns = get_columns(counts)
     group_columns = get_columns(dimensions)
-    headers = get_headers(group_columns) + get_headers(count_columns, '_count') + Model.value_headers()
+    count_columns = get_columns(counts)
+    aggregated_values = [Model.aggregate(v) for v in values]
 
-    entities = group_columns + map(lambda x: func.count(distinct(x)), count_columns) + Model.agg_values()
+    headers = get_headers(group_columns) + get_headers(count_columns, '_count') + values
+    entities = group_columns + map(lambda x: func.count(distinct(x)), count_columns) + aggregated_values
     query = Model.query.with_entities(*entities).filter_by(**filters).group_by(*group_columns)
 
     return jsonify(data=query.all(), headers=headers)
+
+def get_values(request):
+    values = [v for v in request.args.getlist('value') if v in Model.values()]
+    return values if len(values) else Model.values()
 
 def get_headers(columns, suffix=''):
     return map(lambda x: x.key + suffix, columns)
