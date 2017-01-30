@@ -8,9 +8,10 @@ class Secex(db.Model):
     type            = Column(String(6), primary_key=True)
     continent       = Column(String(2), primary_key=True)
     country         = Column(String(3), primary_key=True)
-    state           = Column(String(2), primary_key=True)
+    region          = Column(String(1), primary_key=True)
     mesoregion      = Column(String(4), primary_key=True)
     microregion     = Column(String(5), primary_key=True)
+    state           = Column(String(2), primary_key=True)
     municipality    = Column(String(7), primary_key=True)
     port            = Column(String(4), primary_key=True)
     product_section = Column(String(2), primary_key=True)
@@ -27,9 +28,10 @@ class Secex(db.Model):
             'type',
             'continent',
             'country',
-            'state',
+            'region',
             'mesoregion',
             'microregion',
+            'state',
             'municipality',
             'port',
             'product_section',
