@@ -70,6 +70,47 @@ def load_countries():
 
     print "Countries loaded."
 
+def load_occupations():
+    csv = read_csv_from_s3('redshift/attrs/attrs_cbo.csv')
+    df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id','name_en','name_pt'],
+            converters={
+                "id": str
+            }
+        )
+
+    occupations_family = {}
+    occupations_group = {}
+
+    for _, row in df.iterrows():
+        if len(row['id']) == 4:
+            occupation_family = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"]
+            }
+
+            redis.set('occupation_family/' + str(row['id']), pickle.dumps(occupation_family))
+            occupations_family[row['id']] = occupation_family
+
+        elif len(row['id']) == 1:
+            occupation_group = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"]
+            }
+
+            redis.set('occupation_group/' + str(row['id']), pickle.dumps(occupation_group))
+            occupations_group[row['id']] = occupation_group
+
+
+    redis.set('occupation_family', pickle.dumps(occupations_family))
+    redis.set('occupation_group', pickle.dumps(occupations_group))
+
+    print "Occupations loaded."
+
+
 def load_products():
     csv = read_csv_from_s3('redshift/attrs/attrs_hs.csv')
     df = pd.read_csv(
@@ -124,7 +165,7 @@ def load_products():
     redis.set('product_section', pickle.dumps(sections))
     redis.set('product_chapter', pickle.dumps(chapters))
 
-    print "Products loaded."   
+    print "Products loaded."
 
 def load_states():
     """
@@ -530,3 +571,4 @@ class LoadMetadataCommand(Command):
         load_simples()
         load_legal_nature()
         load_establishment_size()
+        load_occupations()
