@@ -337,11 +337,11 @@ def load_municipalities():
 
     print "Municipalities loaded."
 
-def load_cnaes():
+def load_industries():
     csv = read_csv_from_s3('redshift/attrs/attrs_cnae.csv')
     df = pd.read_csv(
         csv,
-        sep=';',
+        sep=',',
         header=0,
         names=['id','name_en','name_pt'],
         converters={
@@ -349,17 +349,17 @@ def load_cnaes():
         }
     )
 
-    cnaes = {}
-    sections = {}
-    divisions = {}
-    classes = {}
+    industries = {}
+    industry_sections = {}
+    industry_divisions = {}
+    industry_classes = {}
 
-    classes['-1'] = {
+    industry_classes['-1'] = {
         'name_pt': 'Undefined',
         'name_en': 'Não definido'
     }
 
-    sections['0'] = {
+    industry_sections['0'] = {
         'name_pt': 'Undefined',
         'name_en': 'Não definido'
     }
@@ -367,42 +367,44 @@ def load_cnaes():
     for _, row in df.iterrows():
 
         if len(row['id']) == 1:
-            section = {
+            industry_section = {
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"]
             }
 
-            redis.set('cnae_section/' + str(row['id']), pickle.dumps(section))
-            sections[row['id']] = section
+            redis.set('industry_section/' + str(row['id']), pickle.dumps(industry_section))
+            industry_sections[row['id']] = industry_section
 
         elif len(row['id']) == 3:
-            division = {
+            industry_division = {
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"],
-                'section': row["id"][0]
+                'industry_section': row["id"][0]
             }
 
             division_id = row['id'][1:3]
 
-            redis.set('cnae_division/' + str(division_id), pickle.dumps(division))
-            divisions[division_id] = division
+            redis.set('industry_division/' + str(division_id), pickle.dumps(industry_division))
+            industry_divisions[division_id] = industry_division
 
         elif len(row['id']) == 6:
-            classe = {
+            industry_classe = {
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"],
-                'section': row["id"][0],
-                'division': row["id"][1:3]
+                'industry_section': row["id"][0],
+                'industry_division': row["id"][1:3]
             }
 
-            classes[row["id"][1:]] = classe
-            redis.set('cnae/' + str(id), pickle.dumps(classe))
+            class_id = row["id"][1:]
 
-    redis.set('cnae', pickle.dumps(classes))
-    redis.set('cnae_division', pickle.dumps(divisions))
-    redis.set('cnae_section', pickle.dumps(sections))
+            redis.set('industry_class/' + str(class_id), pickle.dumps(industry_classe))
+            industry_classes[class_id] = industry_classe
 
-    print "CNAEs loaded."
+    redis.set('industry_class', pickle.dumps(industry_classes))
+    redis.set('industry_division', pickle.dumps(industry_divisions))
+    redis.set('industry_section', pickle.dumps(industry_sections))
+
+    print "Industries loaded."
 
 def load_ethnicities():
     csv = read_csv_from_s3('redshift/attrs/attrs_etnias.csv')
@@ -565,7 +567,7 @@ class LoadMetadataCommand(Command):
         load_economic_blocks()
         load_genders()
         load_municipalities()
-        load_cnaes()
+        load_industries()
         load_ethnicities()
         load_literacities()
         load_simples()
