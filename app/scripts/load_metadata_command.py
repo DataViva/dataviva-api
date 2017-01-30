@@ -26,15 +26,15 @@ def load_ports():
             csv,
             sep=';',
             header=0,
-            names=['id', 'name']
+            names=['id','name','state']
         )
 
     ports = {}
 
     for _, row in df.iterrows():
         port = {
-            'name_pt': row["name"],
-            'name_en': row["name"]
+            'name_pt': row["name"] + ' - ' + row["state"],
+            'name_en': row["name"] + ' - ' + row["state"]
         }
         ports[row['id']] = port
         redis.set('port/' + str(row['id']), pickle.dumps(port))
