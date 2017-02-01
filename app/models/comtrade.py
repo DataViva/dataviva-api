@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, BigInteger, func
 from app import db
 
 class Comtrade(db.Model):
@@ -24,12 +24,12 @@ class Comtrade(db.Model):
         ]
 
     @classmethod
-    def agg_values(cls):
-        return [
-            func.sum(cls.weight),
-            func.sum(cls.value)        
-        ] 
+    def aggregate(cls, value):
+        return {
+            'weight': func.sum(cls.weight),
+            'value': func.sum(cls.value),
+        }[value]
 
     @classmethod
-    def value_headers(cls):
+    def values(cls):
         return ['weight', 'value']
