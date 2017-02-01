@@ -176,7 +176,7 @@ def load_states():
             csv,
             sep=';',
             header=0,
-            names=['mdic_name', 'mdic_id', 'ibge_id'],
+            names=['mdic_name', 'mdic_id', 'ibge_id', 'uf'],
             converters={
                 "ibge_id": str
             }
@@ -187,7 +187,9 @@ def load_states():
     for _, row in df.iterrows():  
         state = {
             'name_pt': row["mdic_name"],
-            'name_en': row["mdic_name"]
+            'name_en': row["mdic_name"],
+            'abbr_pt': row['uf'],
+            'abbr_en': row['uf']
         }
         if not row['ibge_id']:
             continue
