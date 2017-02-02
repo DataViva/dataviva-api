@@ -579,8 +579,8 @@ def load_universities():
 
     print "Universities loaded."
 
-def load_course_sc():
-    csv = read_csv_from_s3('redshift/attrs/attrs_course_sc.csv')
+def load_sc_course():
+    csv = read_csv_from_s3('redshift/attrs/attrs_sc_course.csv')
     df = pd.read_csv(
         csv,
         sep=';',
@@ -591,33 +591,73 @@ def load_course_sc():
         }
     )
 
-    courses_sc = {}
-    courses_sc_field = {}
+    sc_courses = {}
+    sc_courses_field = {}
 
     for _, row in df.iterrows():
 
         if len(row['id']) == 2:
-            course_sc_field = {
+            sc_course_field = {
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"]
             }
 
-            redis.set('course_field/' + str(row['id']), pickle.dumps(course_sc_field))
-            courses_sc_field[row['id']] = course_sc_field
+            redis.set('sc_course_field/' + str(row['id']), pickle.dumps(sc_course_field))
+            sc_courses_field[row['id']] = sc_course_field
 
         elif len(row['id']) == 5:
-            course_sc = {
+            sc_course = {
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"]
             }
 
-            redis.set('course/' + str(row['id']), pickle.dumps(course_sc))
-            courses_sc[row['id']] = course_sc
+            redis.set('sc_course/' + str(row['id']), pickle.dumps(sc_course))
+            sc_courses[row['id']] = sc_course
 
-    redis.set('course', pickle.dumps(courses_sc))
-    redis.set('course_field', pickle.dumps(courses_sc_field))
+    redis.set('sc_course', pickle.dumps(sc_courses))
+    redis.set('sc_course_field', pickle.dumps(sc_courses_field))
 
-    print "Courses loaded."
+    print "SC Courses loaded."
+
+def load_hedu_course():
+    csv = read_csv_from_s3('redshift/attrs/attrs_hedu_course.csv')
+    df = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'name_en', 'name_pt'],
+        converters={
+            "id": str
+        }
+    )
+
+    hedu_courses = {}
+    hedu_courses_field = {}
+
+    for _, row in df.iterrows():
+
+        if len(row['id']) == 2:
+            hedu_course_field = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"]
+            }
+
+            redis.set('hedu_course_field/' + str(row['id']), pickle.dumps(hedu_course_field))
+            hedu_courses_field[row['id']] = hedu_course_field
+
+        elif len(row['id']) == 6:
+            hedu_course = {
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"]
+            }
+
+            redis.set('hedu_course/' + str(row['id']), pickle.dumps(hedu_course))
+            hedu_courses[row['id']] = hedu_course
+
+    redis.set('hedu_course', pickle.dumps(hedu_courses))
+    redis.set('hedu_course_field', pickle.dumps(hedu_courses_field))
+
+    print "HEDU Courses loaded."
 
 
 class LoadMetadataCommand(Command):
@@ -644,4 +684,5 @@ class LoadMetadataCommand(Command):
         load_establishment_size()
         load_occupations()
         load_universities()
-        load_course_sc()
+        load_sc_course()
+        load_hedu_course()
