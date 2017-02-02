@@ -552,6 +552,33 @@ def load_genders():
 
     print "Genders loaded."
 
+def load_universities():
+    csv = read_csv_from_s3('redshift/attrs/attrs_university.csv')
+    df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_pt'],
+            converters={
+                'id': str
+            }
+        )
+
+    universities = {}
+
+    for _, row in df.iterrows():
+        university = {
+            'name_en': row["name_pt"],
+            'name_pt': row["name_pt"]
+        }
+
+        universities[row['id']] = university
+        redis.set('university/' + str(row['id']), pickle.dumps(university))
+
+    redis.set('university', pickle.dumps(universities))
+
+    print "Universities loaded."    
+
 
 class LoadMetadataCommand(Command):
     
@@ -576,3 +603,4 @@ class LoadMetadataCommand(Command):
         load_legal_nature()
         load_establishment_size()
         load_occupations()
+        load_universities()
