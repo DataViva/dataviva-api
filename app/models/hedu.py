@@ -2,23 +2,22 @@ from sqlalchemy import Column, Integer, String, func
 from app import db
 
 class Hedu(db.Model):
-    __tablename__           = 'hedu'
-    year         = Column(Integer, primary_key=True)
-    region       = Column(String(1), primary_key=True)
-    mesoregion   = Column(String(4), primary_key=True)
-    microregion  = Column(String(5), primary_key=True)
-    state        = Column(String(2), primary_key=True)
-    municipality = Column(String(7), primary_key=True)
-    university   = Column(String(5), primary_key=True)
-    course_field = Column(String(2), primary_key=True)
-    course       = Column(String(6), primary_key=True)
-    shift        = Column(String(2), primary_key=True)
-    graduates    = Column(String(2), primary_key=True)
-    entrants     = Column(String(2), primary_key=True)
-    gender       = Column(String(2), primary_key=True)
-    ethnicity    = Column(String(2), primary_key=True)
-    age          = Column(Integer)
-
+    __tablename__     = 'hedu'
+    year              = Column(Integer, primary_key=True)
+    region            = Column(String(1), primary_key=True)
+    mesoregion        = Column(String(4), primary_key=True)
+    microregion       = Column(String(5), primary_key=True)
+    state             = Column(String(2), primary_key=True)
+    municipality      = Column(String(7), primary_key=True)
+    university        = Column(String(5), primary_key=True)
+    hedu_course_field = Column(String(2), primary_key=True)
+    hedu_course       = Column(String(6), primary_key=True)
+    shift             = Column(String(2), primary_key=True)
+    graduates         = Column(String(2), primary_key=True)
+    entrants          = Column(String(2), primary_key=True)
+    gender            = Column(String(2), primary_key=True)
+    ethnicity         = Column(String(2), primary_key=True)
+    age               = Column(Integer)
 
     @classmethod
     def dimensions(cls):
@@ -30,8 +29,8 @@ class Hedu(db.Model):
             'state',
             'municipality',
             'university',
-            'course_field',
-            'course',
+            'hedu_course_field',
+            'hedu_course',
             'shift',
             'graduates',
             'entrants',
