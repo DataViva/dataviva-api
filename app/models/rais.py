@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Numeric, func
+from sqlalchemy import Column, Integer, String, Numeric, func, distinct
 from app import db
 
 class Rais(db.Model):
@@ -57,8 +57,9 @@ class Rais(db.Model):
             'average_wage': func.avg(cls.wage),
             'wage': func.sum(cls.wage),
             'jobs': func.count(cls.employee),
+            'average_establishment_size': func.count(cls.employee) / func.count(distinct(cls.establishment))    
         }[value]
 
     @classmethod
     def values(cls):
-        return ['average_age', 'average_wage', 'wage', 'jobs']
+        return ['average_age', 'average_wage', 'wage', 'jobs', 'average_establishment_size']
