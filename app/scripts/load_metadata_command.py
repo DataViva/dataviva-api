@@ -124,46 +124,53 @@ def load_products():
         )  
 
     products = {}
-    sections = {}
-    chapters = {}
+    product_sections = {}
+    product_chapters = {}
 
     for _, row in df.iterrows():
-
         if row['profundidade'] == 'Seção':
-            section = {
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"]
-            }
+            product_section_id = row['id']
 
-            redis.set('product_section/' + str(row['id']), pickle.dumps(section))
-            sections[row['id']] = section
-
-        elif row['profundidade'] == 'Capítulo':
-            chapter = {
+            product_section = {
+                'id': product_section_id,
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"],
-                'section': row["id"][:2]
             }
 
-            redis.set('product_chapter/' + str(row['id']), pickle.dumps(chapter))
-            chapters[row["id"]] = chapter
+            redis.set('product_section/' + str(product_section_id), pickle.dumps(product_section))
+            product_sections[product_section_id] = product_section
 
-        else:
+        elif row['profundidade'] == 'Capítulo':
+            product_chapter_id = row['id'][2:]
+
+            product_chapter = {
+                'id': product_chapter_id,
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+            }
+
+            redis.set('product_chapter/' + str(product_chapter_id), pickle.dumps(product_chapter))
+            product_chapters[product_chapter_id] = product_chapter
+
+    for _, row in df.iterrows():
+        if row['profundidade'] == 'Posição':
+            product_id = row['id'][2:]
+            product_section_id = row["id"][:2]
+            product_chapter_id = row["id"][2:4]
+
             product = {
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"],
-                'section': row["id"][:2],
-                'chapter': row["id"][2:4]
+                'product_section': product_sections[product_section_id],
+                'product_chapter': product_chapters[product_chapter_id],
             }
-
-            product_id = row['id'][2:]
 
             products[product_id] = product
             redis.set('product/' + str(product_id), pickle.dumps(product))
 
     redis.set('product', pickle.dumps(products))
-    redis.set('product_section', pickle.dumps(sections))
-    redis.set('product_chapter', pickle.dumps(chapters))
+    redis.set('product_section', pickle.dumps(product_sections))
+    redis.set('product_chapter', pickle.dumps(product_chapters))
 
     print "Products loaded."
 
