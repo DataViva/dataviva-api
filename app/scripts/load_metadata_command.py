@@ -208,6 +208,32 @@ def load_states():
 
     print "States loaded."
 
+def load_regions():
+    csv = read_csv_from_s3('redshift/attrs/attrs_regioes.csv')
+    df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'abbr_en', 'name_pt', 'abbr_pt']
+        )
+
+    regions = {}
+
+    for _, row in df.iterrows():
+        region = {
+            'name_en': row["name_en"],
+            'abbr_en': row['abbr_en'],
+            'name_pt': row["name_pt"],
+            'abbr_pt': row['abbr_pt'],
+        }
+
+        regions[row['id']] = region
+        redis.set('region/' + str(row['id']), pickle.dumps(region))
+
+    redis.set('region', pickle.dumps(regions))
+
+    print "Regions loaded."
+
 def load_continent():
     csv = read_csv_from_s3('redshift/attrs/attrs_continente.csv')
     df = pd.read_csv(
@@ -674,22 +700,23 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_states()
-        load_ports()
-        load_countries()
-        load_products()
-        load_continent()
-        load_territories()
-        load_economic_blocks()
-        load_genders()
-        load_municipalities()
-        load_industries()
-        load_ethnicities()
-        load_literacities()
-        load_simples()
-        load_legal_nature()
-        load_establishment_size()
-        load_occupations()
-        load_universities()
-        load_sc_course()
-        load_hedu_course()
+        # load_states()
+        # load_ports()
+        # load_countries()
+        # load_products()
+        # load_continent()
+        # load_territories()
+        # load_economic_blocks()
+        # load_genders()
+        # load_municipalities()
+        # load_industries()
+        # load_ethnicities()
+        # load_literacities()
+        # load_simples()
+        # load_legal_nature()
+        # load_establishment_size()
+        # load_occupations()
+        # load_universities()
+        # load_sc_course()
+        # load_hedu_course()
+        load_regions()
