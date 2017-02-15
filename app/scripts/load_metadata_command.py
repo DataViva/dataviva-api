@@ -192,14 +192,16 @@ def load_states():
     states = {}
 
     for _, row in df.iterrows():  
+        if not row['ibge_id']:
+            continue
+
         state = {
+            'id': row['ibge_id'],
             'name_pt': row["mdic_name"],
             'name_en': row["mdic_name"],
             'abbr_pt': row['uf'],
             'abbr_en': row['uf']
         }
-        if not row['ibge_id']:
-            continue
 
         states[row['ibge_id']] = state
         redis.set('state/' + str(row['ibge_id']), pickle.dumps(state))
@@ -221,6 +223,7 @@ def load_regions():
 
     for _, row in df.iterrows():
         region = {
+            'id': row['id'],
             'name_en': row["name_en"],
             'abbr_en': row['abbr_en'],
             'name_pt': row["name_pt"],
@@ -244,7 +247,6 @@ def load_continent():
         )
 
     continents = {}
-
 
     for _, row in df.iterrows():
 
@@ -353,16 +355,16 @@ def load_municipalities():
             'name_en': row["municipio_name"],
             'mesoregion': {
                 'id': row["mesorregiao_id"],
-                'name': row["mesorregiao_name"]
+                'name_pt': row["mesorregiao_name"],
+                'name_en': row["mesorregiao_name"],
             },
             'microregion': {
                 'id': row["microrregiao_id"],
-                'name': row["microrregiao_name"]
+                'name_pt': row["microrregiao_name"],
+                'name_en': row["microrregiao_name"],
             },
-            'state': {
-                'id': row["uf_id"],
-                'name': row["uf_name"]
-            }
+            'state': pickle.loads(redis.get('state/' + row['municipio_id'][:2])),
+            'region': pickle.loads(redis.get('region/' + row['municipio_id'][0])),
         }
 
         municipalities[row['municipio_id']] = municipality
@@ -700,23 +702,23 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        # load_states()
-        # load_ports()
-        # load_countries()
-        # load_products()
-        # load_continent()
-        # load_territories()
-        # load_economic_blocks()
-        # load_genders()
-        # load_municipalities()
-        # load_industries()
-        # load_ethnicities()
-        # load_literacities()
-        # load_simples()
-        # load_legal_nature()
-        # load_establishment_size()
-        # load_occupations()
-        # load_universities()
-        # load_sc_course()
-        # load_hedu_course()
+        load_continent()
+        load_countries()
         load_regions()
+        load_states()
+        load_municipalities()
+        load_ports()
+        load_products()
+        load_territories()
+        load_economic_blocks()
+        load_genders()
+        load_industries()
+        load_ethnicities()
+        load_literacities()
+        load_simples()
+        load_legal_nature()
+        load_establishment_size()
+        load_occupations()
+        load_universities()
+        load_sc_course()
+        load_hedu_course()
