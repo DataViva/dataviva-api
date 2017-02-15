@@ -31,13 +31,18 @@ def api(dataset, path):
     entities = group_columns + map(lambda x: func.count(distinct(x)), count_columns) + aggregated_values
     query = Model.query.with_entities(*entities).filter_by(**filters).group_by(*group_columns)
 
-    order = request.args.get('order', None)
     direction = request.args.get('direction', '')
+    order = request.args.get('order', None)
     if order:
-        if direction.lower() == 'desc':
-            query = query.order_by(getattr(Model, order).desc())
+        if order in Model.dimensions():
+            order_by = getattr(Model, order)
         else:
-            query = query.order_by(getattr(Model, order))
+            order_by = Model.aggregate(order)
+
+        if direction.lower() == 'desc':
+            order_by = order_by.desc()
+
+        query = query.order_by(order_by)
 
     limit = request.args.get('limit', None)
     if limit:
