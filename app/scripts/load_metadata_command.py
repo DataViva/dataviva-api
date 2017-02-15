@@ -390,7 +390,6 @@ def load_industries():
         }
     )
 
-    industries = {}
     industry_sections = {}
     industry_divisions = {}
     industry_classes = {}
@@ -406,9 +405,9 @@ def load_industries():
     }
 
     for _, row in df.iterrows():
-
         if len(row['id']) == 1:
             industry_section = {
+                'id': row['id'],
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"]
             }
@@ -416,27 +415,32 @@ def load_industries():
             redis.set('industry_section/' + str(row['id']), pickle.dumps(industry_section))
             industry_sections[row['id']] = industry_section
 
-        elif len(row['id']) == 3:
+    for _, row in df.iterrows():
+        if len(row['id']) == 3:
+            division_id = row['id'][1:3]
+
             industry_division = {
+                'id': division_id,
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"],
                 'industry_section': row["id"][0]
             }
 
-            division_id = row['id'][1:3]
 
             redis.set('industry_division/' + str(division_id), pickle.dumps(industry_division))
             industry_divisions[division_id] = industry_division
 
-        elif len(row['id']) == 6:
+    for _, row in df.iterrows():
+        if len(row['id']) == 6:
+            class_id = row["id"][1:]
+
             industry_classe = {
+                'id': class_id,
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"],
-                'industry_section': row["id"][0],
-                'industry_division': row["id"][1:3]
+                'industry_section': industry_sections[row["id"][0]],
+                'industry_division': industry_divisions[row["id"][1:3]]
             }
-
-            class_id = row["id"][1:]
 
             redis.set('industry_class/' + str(class_id), pickle.dumps(industry_classe))
             industry_classes[class_id] = industry_classe
