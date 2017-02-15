@@ -11,7 +11,8 @@ blueprint = Blueprint('api', __name__, url_prefix='/')
 @cache.cached(key_prefix=api_cache_key('dataset'))
 def api(dataset, path):
     global Model
-    Model = getattr(import_module('app.models.' + dataset), dataset.title())
+    class_name = ''.join([x.title() for x in dataset.split('_')])
+    Model = getattr(import_module('app.models.' + dataset), class_name)
     
     dimensions = map(singularize, path.split('/'))
     if invalid_dimension(dimensions):
