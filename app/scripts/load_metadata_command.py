@@ -86,23 +86,27 @@ def load_occupations():
     occupations_group = {}
 
     for _, row in df.iterrows():
-        if len(row['id']) == 4:
-            occupation_family = {
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"]
-            }
-
-            redis.set('occupation_family/' + str(row['id']), pickle.dumps(occupation_family))
-            occupations_family[row['id']] = occupation_family
-
-        elif len(row['id']) == 1:
+        if len(row['id']) == 1:
             occupation_group = {
+                'id': row['id'],
                 'name_pt': row["name_pt"],
                 'name_en': row["name_en"]
             }
 
             redis.set('occupation_group/' + str(row['id']), pickle.dumps(occupation_group))
             occupations_group[row['id']] = occupation_group
+
+    for _, row in df.iterrows():
+        if len(row['id']) == 4:
+            occupation_family = {
+                'id': row['id'],
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+                'occupation_group': occupations_group[row['id'][0]],
+            }
+
+            redis.set('occupation_family/' + str(row['id']), pickle.dumps(occupation_family))
+            occupations_family[row['id']] = occupation_family
 
 
     redis.set('occupation_family', pickle.dumps(occupations_family))
