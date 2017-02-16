@@ -30,4 +30,4 @@ class Development(Config):
 
 class Testing(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    CACHE_TYPE = 'null'
