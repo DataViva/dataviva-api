@@ -38,8 +38,9 @@ class Sc(db.Model):
     def aggregate(cls, value):
         return {
             'average_age': func.avg(cls.age),
+            'students': func.count()
         }[value]
 
     @classmethod
     def values(cls):
-        return ['average_age', ]
+        return ['average_age', 'students']
