@@ -2,14 +2,17 @@ from sqlalchemy import Column, Integer, String, func
 from app import db
 
 class CnesEstablishment(db.Model):
-    __tablename__ = 'cnes_establishment'
-    year          = Column(Integer, primary_key=True)
-    region        = Column(String(1), primary_key=True)
-    mesoregion    = Column(String(4), primary_key=True)
-    microregion   = Column(String(5), primary_key=True)
-    state         = Column(String(2), primary_key=True)
-    municipality  = Column(String(7), primary_key=True)
-    cnes          = Column(String(7), primary_key=True)
+    __tablename__               = 'cnes_establishment'
+    year                        = Column(Integer, primary_key=True)
+    region                      = Column(String(1), primary_key=True)
+    mesoregion                  = Column(String(4), primary_key=True)
+    microregion                 = Column(String(5), primary_key=True)
+    state                       = Column(String(2), primary_key=True)
+    municipality                = Column(String(7), primary_key=True)
+    cnes                        = Column(String(7), primary_key=True)
+    establishment_type          = Column(String(2), primary_key=True)
+    sus_bond                    = Column(String(1), primary_key=True)
+
 
     @classmethod    
     def dimensions(cls):
@@ -20,6 +23,8 @@ class CnesEstablishment(db.Model):
             'microregion',
             'state',
             'municipality',
+            'establishment_type',
+            'sus_bond',
         ]
 
     @classmethod
