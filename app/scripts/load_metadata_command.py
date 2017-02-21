@@ -395,13 +395,13 @@ def load_industries():
     industry_classes = {}
 
     industry_classes['-1'] = {
-        'name_pt': 'Undefined',
-        'name_en': 'Não definido'
+        'name_pt': 'Não definido',
+        'name_en': 'Undefined'
     }
 
     industry_sections['0'] = {
-        'name_pt': 'Undefined',
-        'name_en': 'Não definido'
+        'name_pt': 'Não definido',
+        'name_en': 'Undefined'
     }
 
     for _, row in df.iterrows():
