@@ -702,6 +702,54 @@ def load_hedu_course():
 
     print "HEDU Courses loaded."
 
+def load_sus_bond():
+    csv = read_csv_from_s3('redshift/attrs/attrs_sus_bond.csv')
+    df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt']
+        )
+
+    sus_bonds = {}
+
+    for _, row in df.iterrows():
+        sus_bond = {
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"]
+        }
+
+        sus_bonds[row['id']] = sus_bond
+        redis.set('sus_bond/' + str(row['id']), pickle.dumps(sus_bond))
+
+    redis.set('sus_bond', pickle.dumps(sus_bonds))
+
+    print "SUS Bond loaded."
+
+def load_cnes_establishment_type():
+    csv = read_csv_from_s3('redshift/attrs/attrs_cnes_establishment_type.csv')
+    df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt']
+        )
+
+    establishment_types = {}
+
+    for _, row in df.iterrows():
+        establishment_type = {
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"]
+        }
+
+        establishment_types[row['id']] = establishment_type
+        redis.set('establishment_type/' + str(row['id']), pickle.dumps(establishment_type))
+
+    redis.set('establishment_type', pickle.dumps(establishment_types))
+
+    print "CNES Establishment types loaded."
+
 
 class LoadMetadataCommand(Command):
     
@@ -730,3 +778,5 @@ class LoadMetadataCommand(Command):
         load_universities()
         load_sc_course()
         load_hedu_course()
+        load_sus_bond()
+        load_cnes_establishment_type()
