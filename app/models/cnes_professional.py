@@ -10,6 +10,7 @@ class CnesProfessional(db.Model):
     state         = Column(String(2), primary_key=True)
     municipality  = Column(String(7), primary_key=True)
     cnes          = Column(String(7), primary_key=True)
+    cbo           = Column(String(2), primary_key=True)
 
     @classmethod    
     def dimensions(cls):
@@ -20,6 +21,7 @@ class CnesProfessional(db.Model):
             'microregion',
             'state',
             'municipality',
+            'cbo',
         ]
 
     @classmethod
