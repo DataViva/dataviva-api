@@ -25,7 +25,7 @@ class CnesProfessional(db.Model):
     @classmethod
     def aggregate(cls, value):
         return {
-            'professionals': func.count(cls.cnes)
+            'professionals': func.count()
         }[value]
 
     @classmethod
