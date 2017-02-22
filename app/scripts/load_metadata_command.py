@@ -778,6 +778,29 @@ def load_bed_types():
 
     print "Bed types loaded."
 
+def load_equipment_types():
+    csv = read_csv_from_s3('redshift/attrs/attrs_tipos_equipamentos.csv')
+    df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_pt', 'name_en']
+        )
+
+    equipment_types = {}
+
+    for _, row in df.iterrows():
+        equipment_type = {
+            'name_pt': row["name_pt"],
+            'name_en': row["name_en"]
+        }
+
+        equipment_types[row['id']] = equipment_type
+        redis.set('equipment_type/' + str(row['id']), pickle.dumps(equipment_type))
+
+    redis.set('equipment_type', pickle.dumps(equipment_types))
+
+    print "equipment types loaded."
 
 
 class LoadMetadataCommand(Command):
@@ -810,3 +833,4 @@ class LoadMetadataCommand(Command):
         load_sus_bond()
         load_cnes_establishment_type()
         load_bed_types()
+        load_equipment_types()
