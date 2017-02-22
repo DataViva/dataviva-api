@@ -754,6 +754,32 @@ def load_cnes_establishment_type():
     print "CNES Establishment types loaded."
 
 
+def load_bed_types():
+    csv = read_csv_from_s3('redshift/attrs/attrs_tipos_leito.csv')
+    df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_pt', 'name_en']
+        )
+
+    bed_types = {}
+
+    for _, row in df.iterrows():
+        bed_type = {
+            'name_pt': row["name_pt"],
+            'name_en': row["name_en"]
+        }
+
+        bed_types[row['id']] = bed_type
+        redis.set('bed_type/' + str(row['id']), pickle.dumps(bed_type))
+
+    redis.set('bed_type', pickle.dumps(bed_types))
+
+    print "Bed types loaded."
+
+
+
 class LoadMetadataCommand(Command):
     
     """
@@ -783,3 +809,4 @@ class LoadMetadataCommand(Command):
         load_hedu_course()
         load_sus_bond()
         load_cnes_establishment_type()
+        load_bed_types()
