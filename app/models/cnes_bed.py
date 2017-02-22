@@ -21,6 +21,8 @@ class CnesBed(db.Model):
             'microregion',
             'state',
             'municipality',
+            'cnes',
+            'bed_type',
         ]
 
     @classmethod
