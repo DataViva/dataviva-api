@@ -732,7 +732,10 @@ def load_cnes_establishment_type():
             csv,
             sep=';',
             header=0,
-            names=['id', 'name_en', 'name_pt']
+            names=['id', 'name_en', 'name_pt'],
+            converters={
+                'id': str
+            }
         )
 
     establishment_types = {}
