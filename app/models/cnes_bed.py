@@ -10,6 +10,7 @@ class CnesBed(db.Model):
     state         = Column(String(2), primary_key=True)
     municipality  = Column(String(7), primary_key=True)
     cnes          = Column(String(7), primary_key=True)
+    bed_type      = Column(String(7), primary_key=True)
 
     @classmethod    
     def dimensions(cls):
@@ -25,7 +26,7 @@ class CnesBed(db.Model):
     @classmethod
     def aggregate(cls, value):
         return {
-            'beds': func.count(cls.cnes)
+            'beds': func.count()
         }[value]
 
     @classmethod
