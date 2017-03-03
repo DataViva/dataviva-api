@@ -451,177 +451,6 @@ def load_industries():
 
     print "Industries loaded."
 
-def load_ethnicities():
-    csv = read_csv_from_s3('redshift/attrs/attrs_etnias.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'name_pt']
-        )
-
-    ethnicities = {}
-
-    for _, row in df.iterrows():
-        ethnicity = {
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"]
-        }
-
-        ethnicities[row['id']] = ethnicity
-        redis.set('ethnicity/' + str(row['id']), pickle.dumps(ethnicity))
-
-    redis.set('ethnicity', pickle.dumps(ethnicities))
-
-    print "Ethnicities loaded."
-
-def load_literacies():
-    csv = read_csv_from_s3('redshift/attrs/attrs_escolaridade.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'name_pt']
-        )
-
-    literacies = {}
-
-    for _, row in df.iterrows():
-        literacy = {
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"]
-        }
-
-        literacies[row['id']] = literacy
-        redis.set('literacy/' + str(row['id']), pickle.dumps(literacy))
-
-    redis.set('literacy', pickle.dumps(literacies))
-
-    print "Literacies loaded."
-
-def load_simples():
-    csv = read_csv_from_s3('redshift/attrs/attrs_simples.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'name_pt']
-        )
-
-    simples = {}
-
-    for _, row in df.iterrows():
-        simple = {
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"]
-        }
-
-        simples[row['id']] = simple
-        redis.set('simple/' + str(row['id']), pickle.dumps(simple))
-
-    redis.set('simple', pickle.dumps(simples))
-
-    print "Simples loaded."
-
-def load_legal_nature():
-    csv = read_csv_from_s3('redshift/attrs/attrs_natureza_juridica.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'name_pt']
-        )
-
-    legal_natures = {}
-
-    for _, row in df.iterrows():
-        legal_nature = {
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"]
-        }
-
-        legal_natures[row['id']] = legal_nature
-        redis.set('legal_nature/' + str(row['id']), pickle.dumps(legal_nature))
-
-    redis.set('legal_nature', pickle.dumps(legal_natures))
-
-    print "Legal Natures loaded."
-
-def load_establishment_size():
-    csv = read_csv_from_s3('redshift/attrs/attrs_tam_estab.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'name_pt']
-        )
-
-    establishment_sizes = {}
-
-    for _, row in df.iterrows():
-        establishment_size = {
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"]
-        }
-
-        establishment_sizes[row['id']] = establishment_size
-        redis.set('establishment_size/' + str(row['id']), pickle.dumps(establishment_size))
-
-    redis.set('establishment_size', pickle.dumps(establishment_sizes))
-
-    print "Establishment Sizes loaded."
-
-def load_genders():
-    csv = read_csv_from_s3('redshift/attrs/attrs_generos.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_pt', 'name_en']
-        )
-
-    genders = {}
-
-    for _, row in df.iterrows():
-        gender = {
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"]
-        }
-
-        genders[row['id']] = gender
-        redis.set('gender/' + str(row['id']), pickle.dumps(gender))
-
-    redis.set('gender', pickle.dumps(genders))
-
-    print "Genders loaded."
-
-def load_universities():
-    csv = read_csv_from_s3('redshift/attrs/attrs_university.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_pt'],
-            converters={
-                'id': str
-            }
-        )
-
-    universities = {}
-
-    for _, row in df.iterrows():
-        university = {
-            'name_en': row["name_pt"],
-            'name_pt': row["name_pt"]
-        }
-
-        universities[row['id']] = university
-        redis.set('university/' + str(row['id']), pickle.dumps(university))
-
-    redis.set('university', pickle.dumps(universities))
-
-    print "Universities loaded."
-
 def load_sc_course():
     csv = read_csv_from_s3('redshift/attrs/attrs_sc_course.csv')
     df = pd.read_csv(
@@ -702,105 +531,58 @@ def load_hedu_course():
 
     print "HEDU Courses loaded."
 
-def load_sus_bond():
-    csv = read_csv_from_s3('redshift/attrs/attrs_sus_bond.csv')
+def load_cnes_centrneo_types():
+    csv = read_csv_from_s3('redshift/attrs/attrs_cnes_centrneo.csv')
     df = pd.read_csv(
             csv,
             sep=';',
             header=0,
-            names=['id', 'name_en', 'name_pt']
+            names=['id', 'name_pt', 'name_en']
         )
 
-    sus_bonds = {}
+    cnes_centrneo_types = {}
 
     for _, row in df.iterrows():
-        sus_bond = {
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"]
+        cnes_centrneo_type = {
+            'name_pt': row["name_pt"],
+            'name_en': row["name_en"]
         }
 
-        sus_bonds[row['id']] = sus_bond
-        redis.set('sus_bond/' + str(row['id']), pickle.dumps(sus_bond))
+        cnes_centrneo_types[row['id']] = cnes_centrneo_type
+        redis.set('cnes_centrneo_type/' + str(row['id']), pickle.dumps(cnes_centrneo_type))
 
-    redis.set('sus_bond', pickle.dumps(sus_bonds))
+    redis.set('cnes_centrneo_type', pickle.dumps(cnes_centrneo_types))
 
-    print "SUS Bond loaded."
+    print "cnes_centrneo types loaded."
 
-def load_cnes_establishment_type():
-    csv = read_csv_from_s3('redshift/attrs/attrs_cnes_establishment_type.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'name_pt'],
-            converters={
-                'id': str
+def load_attrs(attrs):
+    for attr in attrs:
+        csv = read_csv_from_s3('redshift/attrs/%s' % attr['csv_filename'])
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                converters={
+                    'id': str
+                }
+            )
+
+        items = {}
+
+        for _, row in df.iterrows():
+            item = {
+                'id': row["id"],
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
             }
-        )
 
-    establishment_types = {}
+            items[row['id']] = item
+            redis.set(attr['name'] + '/' + str(row['id']), pickle.dumps(item))
 
-    for _, row in df.iterrows():
-        establishment_type = {
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"]
-        }
+        redis.set(attr['name'], pickle.dumps(items))
 
-        establishment_types[row['id']] = establishment_type
-        redis.set('establishment_type/' + str(row['id']), pickle.dumps(establishment_type))
+        print "%s loaded." % attr['name']
 
-    redis.set('establishment_type', pickle.dumps(establishment_types))
-
-    print "CNES Establishment types loaded."
-
-
-def load_bed_types():
-    csv = read_csv_from_s3('redshift/attrs/attrs_tipos_leito.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_pt', 'name_en']
-        )
-
-    bed_types = {}
-
-    for _, row in df.iterrows():
-        bed_type = {
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"]
-        }
-
-        bed_types[row['id']] = bed_type
-        redis.set('bed_type/' + str(row['id']), pickle.dumps(bed_type))
-
-    redis.set('bed_type', pickle.dumps(bed_types))
-
-    print "Bed types loaded."
-
-def load_equipment_types():
-    csv = read_csv_from_s3('redshift/attrs/attrs_tipos_equipamentos.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_pt', 'name_en']
-        )
-
-    equipment_types = {}
-
-    for _, row in df.iterrows():
-        equipment_type = {
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"]
-        }
-
-        equipment_types[row['id']] = equipment_type
-        redis.set('equipment_type/' + str(row['id']), pickle.dumps(equipment_type))
-
-    redis.set('equipment_type', pickle.dumps(equipment_types))
-
-    print "equipment types loaded."
 
 
 class LoadMetadataCommand(Command):
@@ -819,18 +601,50 @@ class LoadMetadataCommand(Command):
         load_products()
         load_territories()
         load_economic_blocks()
-        load_genders()
-        load_industries()
-        load_ethnicities()
-        load_literacies()
-        load_simples()
-        load_legal_nature()
-        load_establishment_size()
         load_occupations()
-        load_universities()
         load_sc_course()
         load_hedu_course()
-        load_sus_bond()
-        load_cnes_establishment_type()
-        load_bed_types()
-        load_equipment_types()
+        load_attrs([
+            {'name': 'cnes_vinculac', 'csv_filename': 'attrs_cnes_vinculac.csv'},
+            {'name': 'gender', 'csv_filename': 'attrs_generos.csv'},
+            {'name': 'cnes_codequip', 'csv_filename': 'attrs_cnes_codequip.csv'},
+            {'name': 'cnes_ind_sus', 'csv_filename': 'attrs_cnes_ind_sus.csv'},
+            {'name': 'cnes_altacomplexidade_hosp', 'csv_filename': 'attrs_cnes_altacomplexidade_hosp.csv'},
+            {'name': 'cnes_mediacomplexidade_hosp', 'csv_filename': 'attrs_cnes_mediacomplexidade_hosp.csv'},
+            {'name': 'cnes_internacao_hosp', 'csv_filename': 'attrs_cnes_internacao_hosp.csv'},
+            {'name': 'cnes_altacomplexidade_amb', 'csv_filename': 'attrs_cnes_altacomplexidade_amb.csv'},
+            {'name': 'cnes_mediacomplexidade_amb', 'csv_filename': 'attrs_cnes_mediacomplexidade_amb.csv'},
+            {'name': 'cnes_tipequip', 'csv_filename': 'attrs_cnes_tipequip.csv'},
+            {'name': 'cnes_atencaobasica_amb', 'csv_filename': 'attrs_cnes_atencaobasica_amb.csv'},
+            {'name': 'cnes_tipodeurgencia', 'csv_filename': 'attrs_cnes_tipodeurgencia.csv'},
+            {'name': 'cnes_tipodesadt', 'csv_filename': 'attrs_cnes_tipodesadt.csv'},
+            {'name': 'cnes_tipodeambulatorio', 'csv_filename': 'attrs_cnes_tipodeambulatorio.csv'},
+            {'name': 'cnes_tipointernacao', 'csv_filename': 'attrs_cnes_tipointernacao.csv'},
+            {'name': 'cnes_centrneo', 'csv_filename': 'attrs_cnes_centrneo.csv'},
+            {'name': 'cnes_coletres', 'csv_filename': 'attrs_cnes_coletres.csv'},
+            {'name': 'cnes_urgemerg', 'csv_filename': 'attrs_cnes_urgemerg.csv'},
+            {'name': 'cnes_nivate_h', 'csv_filename': 'attrs_cnes_nivate_h.csv'},
+            {'name': 'cnes_nivate_a', 'csv_filename': 'attrs_cnes_nivate_a.csv'},
+            {'name': 'cnes_tp_prest', 'csv_filename': 'attrs_cnes_tp_prest.csv'},
+            {'name': 'cnes_pf_pj', 'csv_filename': 'attrs_cnes_pf_pj.csv'},
+            {'name': 'cnes_tp_unid', 'csv_filename': 'attrs_cnes_tp_unid.csv'},
+            {'name': 'cnes_esfera', 'csv_filename': 'attrs_cnes_esfera.csv'},
+            {'name': 'cnes_niv_dep', 'csv_filename': 'attrs_cnes_niv_dep.csv'},
+            {'name': 'cnes_niv_hier_2', 'csv_filename': 'attrs_cnes_niv_hier_2.csv'},
+            {'name': 'cnes_retencao_2', 'csv_filename': 'attrs_cnes_retencao_2.csv'},
+            {'name': 'cnes_atendamb', 'csv_filename': 'attrs_cnes_atendamb.csv'},
+            {'name': 'cnes_atendhos', 'csv_filename': 'attrs_cnes_atendhos.csv'},
+            {'name': 'cnes_prof_sus', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
+            {'name': 'ethnicity', 'csv_filename': 'attrs_etnias.csv'},
+            {'name': 'literacy', 'csv_filename': 'attrs_escolaridade.csv'},
+            {'name': 'literacy', 'csv_filename': 'attrs_escolaridade.csv'},
+            {'name': 'simple', 'csv_filename': 'attrs_simples.csv'},
+            {'name': 'legal_nature', 'csv_filename': 'attrs_natureza_juridica.csv'},
+            {'name': 'establishment_size', 'csv_filename': 'attrs_tam_estab.csv'},
+            {'name': 'university', 'csv_filename': 'attrs_university.csv'},
+            {'name': 'sus_bond', 'csv_filename': 'attrs_sus_bond.csv'},
+            {'name': 'bed_type', 'csv_filename': 'attrs_tipos_leito.csv'},
+            {'name': 'equipment_type', 'csv_filename': 'attrs_tipos_equipamentos.csv'},
+            {'name': 'establishment_type', 'csv_filename': 'attrs_cnes_establishment_type.csv'},
+            {'name': 'establishment', 'csv_filename': 'attrs_establishments.csv'},
+        ])
