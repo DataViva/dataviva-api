@@ -10,15 +10,15 @@ class CnesEstablishment(db.Model):
     state                           = Column(String(2), primary_key=True)
     municipality                    = Column(String(7), primary_key=True)
     cnes                            = Column(String(7), primary_key=True)
-    establishment_type              = Column(String(2), primary_key=True)
+    unit_type                       = Column(String(2), primary_key=True)
     sus_bond                        = Column(String(1), primary_key=True)
     provider_type                   = Column(String(2), primary_key=True)
     ambulatory_attention            = Column(String(1), primary_key=True)
     hospital_attention              = Column(String(1), primary_key=True)
     emergency_facilities            = Column(String(1), primary_key=True)
     ambulatory_care_facilities      = Column(String(1), primary_key=True)
-    surgery_center_facilities       = Column(Integer, primary_key=True)
-    obstetrical_center_facilities   = Column(Integer, primary_key=True)
+    surgery_center_facilities       = Column(String(1), primary_key=True)
+    obstetrical_center_facilities   = Column(String(1), primary_key=True)
     neonatal_unit_facilities        = Column(String(1), primary_key=True)
     hospital_care                   = Column(String(1), primary_key=True)
     selective_waste_collection      = Column(String(1), primary_key=True)
@@ -27,7 +27,6 @@ class CnesEstablishment(db.Model):
     administrative_sphere           = Column(String(2), primary_key=True)
     tax_withholding                 = Column(String(2), primary_key=True)
     hierarchy_level                 = Column(String(2), primary_key=True)
-    unit_type                       = Column(String(2), primary_key=True)
 
 
     @classmethod    
@@ -39,6 +38,24 @@ class CnesEstablishment(db.Model):
             'microregion',
             'state',
             'municipality',
+            'cnes',
+            'unit_type',
+            'sus_bond',
+            'provider_type',
+            'ambulatory_attention',
+            'hospital_attention',
+            'emergency_facilities',
+            'ambulatory_care_facilities',
+            'surgery_center_facilities',
+            'obstetrical_center_facilities',
+            'neonatal_unit_facilities',
+            'hospital_care',
+            'selective_waste_collection',
+            'dependency_level',
+            'health_region',
+            'administrative_sphere',
+            'tax_withholding',
+            'hierarchy_level',
         ]
 
     @classmethod
