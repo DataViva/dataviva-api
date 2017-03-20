@@ -582,9 +582,7 @@ def load_attrs(attrs):
         redis.set(attr['name'], pickle.dumps(items))
 
         print "%s loaded." % attr['name']
-
-
-
+        
 class LoadMetadataCommand(Command):
     
     """
@@ -605,8 +603,6 @@ class LoadMetadataCommand(Command):
         load_sc_course()
         load_hedu_course()
         load_attrs([
-            #comum
-            {'name': 'establishment', 'csv_filename': 'attrs_establishments.csv'},
             #rais and scholar
             {'name': 'ethnicity', 'csv_filename': 'attrs_etnias.csv'},
             #rais
@@ -650,7 +646,7 @@ class LoadMetadataCommand(Command):
             {'name': 'obstetrical_center_facilities', 'csv_filename': 'attrs_cnes_centrobs.csv'},
             {'name': 'surgery_center_facilities', 'csv_filename': 'attrs_cnes_centrcir.csv'},
             {'name': 'health_region', 'csv_filename': 'attrs_cnes_regsaude.csv'},
-
+            {'name': 'cnes', 'csv_filename': 'attrs_cnes.csv'},
             #cnes equipment
             {'name': 'cnes_ind_sus', 'csv_filename': 'attrs_cnes_ind_sus.csv'},
             {'name': 'cnes_codequip', 'csv_filename': 'attrs_cnes_codequip.csv'},
@@ -659,4 +655,6 @@ class LoadMetadataCommand(Command):
             # cnes professionals
             {'name': 'cnes_vinculac', 'csv_filename': 'attrs_cnes_vinculac.csv'},
             {'name': 'cnes_prof_sus', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
+            #comum
+            {'name': 'establishment', 'csv_filename': 'attrs_establishments.csv'},
         ])
