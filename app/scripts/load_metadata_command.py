@@ -564,7 +564,8 @@ def load_attrs(attrs):
                 header=0,
                 converters={
                     'id': str
-                }
+                },
+                engine='c'
             )
 
         items = {}
