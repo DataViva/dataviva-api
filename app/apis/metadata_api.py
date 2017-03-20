@@ -13,7 +13,8 @@ def api(data, id=None):
         'cnes_ind_sus',
         'cnes_tipodeurgencia',
         'cnes_atendhos',
-        'cnes_coletres'
+        'cnes_coletres',
+        'cnes',
     ]
 
     if data not in exceptions:
