@@ -355,6 +355,7 @@ def load_municipalities():
 
     for _, row in df.iterrows():
         municipality = {
+            'id': row['municipio_id'],
             'name_pt': row["municipio_name"],
             'name_en': row["municipio_name"],
             'mesoregion': {
