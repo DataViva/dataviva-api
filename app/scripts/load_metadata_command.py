@@ -531,30 +531,6 @@ def load_hedu_course():
 
     print "HEDU Courses loaded."
 
-def load_cnes_centrneo_types():
-    csv = read_csv_from_s3('redshift/attrs/attrs_cnes_centrneo.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_pt', 'name_en']
-        )
-
-    cnes_centrneo_types = {}
-
-    for _, row in df.iterrows():
-        cnes_centrneo_type = {
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"]
-        }
-
-        cnes_centrneo_types[row['id']] = cnes_centrneo_type
-        redis.set('cnes_centrneo_type/' + str(row['id']), pickle.dumps(cnes_centrneo_type))
-
-    redis.set('cnes_centrneo_type', pickle.dumps(cnes_centrneo_types))
-
-    print "cnes_centrneo types loaded."
-
 def load_attrs(attrs):
     for attr in attrs:
         csv = read_csv_from_s3('redshift/attrs/%s' % attr['csv_filename'])
@@ -583,7 +559,7 @@ def load_attrs(attrs):
         redis.set(attr['name'], pickle.dumps(items))
 
         print "%s loaded." % attr['name']
-        
+
 class LoadMetadataCommand(Command):
     
     """
@@ -647,7 +623,6 @@ class LoadMetadataCommand(Command):
             {'name': 'obstetrical_center_facilities', 'csv_filename': 'attrs_cnes_centrobs.csv'},
             {'name': 'surgery_center_facilities', 'csv_filename': 'attrs_cnes_centrcir.csv'},
             {'name': 'health_region', 'csv_filename': 'attrs_cnes_regsaude.csv'},
-            {'name': 'cnes', 'csv_filename': 'attrs_cnes.csv'},
             #cnes equipment
             {'name': 'cnes_ind_sus', 'csv_filename': 'attrs_cnes_ind_sus.csv'},
             {'name': 'cnes_codequip', 'csv_filename': 'attrs_cnes_codequip.csv'},
@@ -657,5 +632,6 @@ class LoadMetadataCommand(Command):
             {'name': 'cnes_vinculac', 'csv_filename': 'attrs_cnes_vinculac.csv'},
             {'name': 'cnes_prof_sus', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
             #comum
+            {'name': 'cnes', 'csv_filename': 'attrs_cnes.csv'},
             {'name': 'establishment', 'csv_filename': 'attrs_establishments.csv'},
         ])
