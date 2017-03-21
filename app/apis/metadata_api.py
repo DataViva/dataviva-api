@@ -15,6 +15,12 @@ def api(data, id=None):
         'cnes_atendhos',
         'cnes_coletres',
         'cnes',
+        'neonatal_unit_facilities',
+        'ambulatory_care_facilities',
+        'emergency_facilities',
+        'obstetrical_center_facilities',
+        'surgery_center_facilities',
+        'cnes_prof_sus',
     ]
 
     if data not in exceptions:
