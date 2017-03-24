@@ -9,22 +9,7 @@ blueprint = Blueprint('metadata_api', __name__, url_prefix='/metadata')
 @blueprint.route('/<string:data>/<string:id>')
 @blueprint.route('/<string:data>')
 def api(data, id=None):
-    exceptions = [
-        'cnes_ind_sus',
-        'cnes_tipodeurgencia',
-        'cnes_atendhos',
-        'cnes_coletres',
-        'cnes',
-        'neonatal_unit_facilities',
-        'ambulatory_care_facilities',
-        'emergency_facilities',
-        'obstetrical_center_facilities',
-        'surgery_center_facilities',
-        'cnes_prof_sus',
-    ]
-
-    if data not in exceptions:
-        data = singularize(data)
+    data = singularize(data)
 
     if id:
         data = data + '/' + id

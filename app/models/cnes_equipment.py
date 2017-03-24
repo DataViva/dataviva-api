@@ -9,7 +9,7 @@ class CnesEquipment(db.Model):
     microregion                     = Column(String(5), primary_key=True)
     state                           = Column(String(2), primary_key=True)
     municipality                    = Column(String(7), primary_key=True)
-    cnes                            = Column(String(7), primary_key=True)
+    establishment                   = Column(String(7), primary_key=True)
     dependency_level                = Column(String(1), primary_key=True)
     unit_type                       = Column(String(2), primary_key=True)       
     equipment_type                  = Column(String(1), primary_key=True)       
@@ -29,6 +29,7 @@ class CnesEquipment(db.Model):
             'state',
             'municipality',
             'equipment_type',
+            'establishment',
         ]
 
     @classmethod

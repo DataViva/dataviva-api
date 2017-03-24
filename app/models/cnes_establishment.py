@@ -9,17 +9,17 @@ class CnesEstablishment(db.Model):
     microregion                     = Column(String(5), primary_key=True)
     state                           = Column(String(2), primary_key=True)
     municipality                    = Column(String(7), primary_key=True)
-    cnes                            = Column(String(7), primary_key=True)
+    establishment                   = Column(String(7), primary_key=True)
     unit_type                       = Column(String(2), primary_key=True)
     sus_bond                        = Column(String(1), primary_key=True)
     provider_type                   = Column(String(2), primary_key=True)
     ambulatory_attention            = Column(String(1), primary_key=True)
     hospital_attention              = Column(String(1), primary_key=True)
-    emergency_facilities            = Column(String(1), primary_key=True)
-    ambulatory_care_facilities      = Column(String(1), primary_key=True)
-    surgery_center_facilities       = Column(String(1), primary_key=True)
-    obstetrical_center_facilities   = Column(String(1), primary_key=True)
-    neonatal_unit_facilities        = Column(String(1), primary_key=True)
+    emergency_facility              = Column(String(1), primary_key=True)
+    ambulatory_care_facility        = Column(String(1), primary_key=True)
+    surgery_center_facility         = Column(String(1), primary_key=True)
+    obstetrical_center_facility     = Column(String(1), primary_key=True)
+    neonatal_unit_facility          = Column(String(1), primary_key=True)
     hospital_care                   = Column(String(1), primary_key=True)
     selective_waste_collection      = Column(String(1), primary_key=True)
     dependency_level                = Column(String(1), primary_key=True)
@@ -38,17 +38,17 @@ class CnesEstablishment(db.Model):
             'microregion',
             'state',
             'municipality',
-            'cnes',
+            'establishment',
             'unit_type',
             'sus_bond',
             'provider_type',
             'ambulatory_attention',
             'hospital_attention',
-            'emergency_facilities',
-            'ambulatory_care_facilities',
-            'surgery_center_facilities',
-            'obstetrical_center_facilities',
-            'neonatal_unit_facilities',
+            'emergency_facility',
+            'ambulatory_care_facility',
+            'surgery_center_facility',
+            'obstetrical_center_facility',
+            'neonatal_unit_facility',
             'hospital_care',
             'selective_waste_collection',
             'dependency_level',
@@ -61,7 +61,7 @@ class CnesEstablishment(db.Model):
     @classmethod
     def aggregate(cls, value):
         return {
-            'establishments': func.count(cls.cnes)
+            'establishments': func.count(cls.establishment)
         }[value]
 
     @classmethod
