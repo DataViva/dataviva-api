@@ -633,6 +633,4 @@ class LoadMetadataCommand(Command):
             {'name': 'cnes_vinculac', 'csv_filename': 'attrs_cnes_vinculac.csv'},
             {'name': 'cnes_prof_sus', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
             #comum
-            {'name': 'cnes', 'csv_filename': 'attrs_cnes.csv'},
-            {'name': 'establishment', 'csv_filename': 'attrs_establishments.csv'},
         ])
