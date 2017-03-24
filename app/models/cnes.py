@@ -18,6 +18,11 @@ class Cnes(db.Model):
             'id',
             'name_pt',
             'name_en',
+            'region',
+            'mesoregion',
+            'microregion',
+            'state',
+            'municipality',
         ]
 
     @classmethod
