@@ -630,7 +630,7 @@ class LoadMetadataCommand(Command):
             {'name': 'cnes_tipequip', 'csv_filename': 'attrs_cnes_tipequip.csv'},
             {'name': 'equipment_type', 'csv_filename': 'attrs_tipos_equipamentos.csv'},
             # cnes professionals
-            {'name': 'cnes_vinculac', 'csv_filename': 'attrs_cnes_vinculac.csv'},
-            {'name': 'cnes_prof_sus', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
+            {'name': 'professional_link', 'csv_filename': 'attrs_cnes_vinculac.csv'},
+            {'name': 'sus_healthcare_professional', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
             #comum
         ])
