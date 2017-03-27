@@ -40,9 +40,11 @@ class CnesEquipment(db.Model):
     @classmethod
     def aggregate(cls, value):
         return {
-            'equipments': func.count()
+            'equipments': func.count(),
+            'equipment_quantity': func.sum(cls.equipment_quantity),
+            'equipment_quantity_in_use': func.sum(cls.equipment_quantity_in_use),
         }[value]
 
     @classmethod
     def values(cls):
-        return ['equipments']
+        return ['equipments', 'equipment_quantity', 'equipment_quantity_in_use']
