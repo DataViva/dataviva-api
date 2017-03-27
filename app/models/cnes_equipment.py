@@ -30,6 +30,11 @@ class CnesEquipment(db.Model):
             'municipality',
             'equipment_type',
             'establishment',
+            'dependency_level',
+            'unit_type',
+            'equipment_code',
+            'sus_availability_indicator',
+            'health_region'
         ]
 
     @classmethod
