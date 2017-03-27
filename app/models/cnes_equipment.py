@@ -28,10 +28,10 @@ class CnesEquipment(db.Model):
             'microregion',
             'state',
             'municipality',
-            'equipment_type',
             'establishment',
             'dependency_level',
             'unit_type',
+            'equipment_type',
             'equipment_code',
             'sus_availability_indicator',
             'health_region'

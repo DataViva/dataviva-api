@@ -29,6 +29,7 @@ class CnesBed(db.Model):
             'state',
             'municipality',
             'establishment',
+            'unit_type',
             'bed_type',
             'bed_type_per_specialty',
             'health_region'
