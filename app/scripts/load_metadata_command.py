@@ -593,7 +593,7 @@ class LoadMetadataCommand(Command):
             {'name': 'university', 'csv_filename': 'attrs_university.csv'},
             #cnes bed
             {'name': 'bed_type', 'csv_filename': 'attrs_tipos_leito.csv'},
-            {'name': 'bed_type_per_specialty', 'csv_filename': 'attrs_codleito.csv'},
+            {'name': 'bed_type_per_specialty', 'csv_filename': 'attrs_cnes_codleito.csv'},
             #cnes
             {'name': 'cnes_pf_pj', 'csv_filename': 'attrs_cnes_pf_pj.csv'},
             # cnes establishment
