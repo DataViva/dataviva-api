@@ -625,10 +625,9 @@ class LoadMetadataCommand(Command):
             {'name': 'surgery_center_facility', 'csv_filename': 'attrs_cnes_centrcir.csv'},
             {'name': 'health_region', 'csv_filename': 'attrs_cnes_regsaude.csv'},
             #cnes equipment
-            {'name': 'cnes_ind_sus', 'csv_filename': 'attrs_cnes_ind_sus.csv'},
-            {'name': 'cnes_codequip', 'csv_filename': 'attrs_cnes_codequip.csv'},
-            {'name': 'cnes_tipequip', 'csv_filename': 'attrs_cnes_tipequip.csv'},
-            {'name': 'equipment_type', 'csv_filename': 'attrs_tipos_equipamentos.csv'},
+            {'name': 'sus_availability_indicator', 'csv_filename': 'attrs_cnes_ind_sus.csv'},
+            {'name': 'equipment_code', 'csv_filename': 'attrs_cnes_codequip.csv'},
+            {'name': 'equipment_type', 'csv_filename': 'attrs_cnes_tipequip.csv'},
             # cnes professionals
             {'name': 'professional_link', 'csv_filename': 'attrs_cnes_vinculac.csv'},
             {'name': 'sus_healthcare_professional', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
