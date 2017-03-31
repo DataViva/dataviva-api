@@ -534,6 +534,7 @@ def load_hedu_course():
 
 def load_attrs(attrs):
     for attr in attrs:
+        print 'Loading %s ...' % attr['name'],
         csv = read_csv_from_s3('redshift/attrs/%s' % attr['csv_filename'])
         df = pd.read_csv(
                 csv,
@@ -559,7 +560,7 @@ def load_attrs(attrs):
 
         redis.set(attr['name'], pickle.dumps(items))
 
-        print "%s loaded." % attr['name']
+        print " loaded."
 
 class LoadMetadataCommand(Command):
     
@@ -568,18 +569,18 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_continent()
-        load_countries()
-        load_regions()
-        load_states()
-        load_municipalities()
-        load_ports()
-        load_products()
-        load_territories()
-        load_economic_blocks()
-        load_occupations()
-        load_sc_course()
-        load_hedu_course()
+        # load_continent()
+        # load_countries()
+        # load_regions()
+        # load_states()
+        # load_municipalities()
+        # load_ports()
+        # load_products()
+        # load_territories()
+        # load_economic_blocks()
+        # load_occupations()
+        # load_sc_course()
+        # load_hedu_course()
         load_attrs([
             #rais and scholar
             {'name': 'ethnicity', 'csv_filename': 'attrs_etnias.csv'},
