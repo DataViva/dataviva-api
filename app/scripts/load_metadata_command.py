@@ -569,18 +569,18 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        # load_continent()
-        # load_countries()
-        # load_regions()
-        # load_states()
-        # load_municipalities()
-        # load_ports()
-        # load_products()
-        # load_territories()
-        # load_economic_blocks()
-        # load_occupations()
-        # load_sc_course()
-        # load_hedu_course()
+        load_continent()
+        load_countries()
+        load_regions()
+        load_states()
+        load_municipalities()
+        load_ports()
+        load_products()
+        load_territories()
+        load_economic_blocks()
+        load_occupations()
+        load_sc_course()
+        load_hedu_course()
         load_attrs([
             #rais and scholar
             {'name': 'ethnicity', 'csv_filename': 'attrs_etnias.csv'},

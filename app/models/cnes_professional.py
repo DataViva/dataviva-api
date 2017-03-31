@@ -38,16 +38,15 @@ class CnesProfessional(db.Model):
             'professional_link',
             'sus_healthcare_professional',
             'health_region'
-
         ]
 
     @classmethod
     def aggregate(cls, value):
         return {
             'professionals': func.count(),
-            'other_hours_worked': func.sum(),
-            'hospital_hour': func.sum(),
-            'ambulatory_hour': func.sum(),
+            'other_hours_worked': func.sum(cls.other_hours_worked),
+            'hospital_hour': func.sum(cls.hospital_hour),
+            'ambulatory_hour': func.sum(cls.ambulatory_hour),
         }[value]
 
     @classmethod
