@@ -44,9 +44,12 @@ class CnesProfessional(db.Model):
     @classmethod
     def aggregate(cls, value):
         return {
-            'professionals': func.count()
+            'professionals': func.count(),
+            'other_hours_worked': func.sum(),
+            'hospital_hour': func.sum(),
+            'ambulatory_hour': func.sum(),
         }[value]
 
     @classmethod
     def values(cls):
-        return ['professionals']
+        return ['professionals', 'other_hours_worked', 'hospital_hour', 'ambulatory_hour']
