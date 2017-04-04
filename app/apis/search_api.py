@@ -11,6 +11,7 @@ def api(model):
     Model = getattr(import_module('app.models.' + model_name), class_name)
 
     query_string = request.args.get('query')
+    query_string = re.sub('[^0-9a-zA-Z ]+', '*', query_string)
 
     if not query_string:
         return 'Query is missing', 400
