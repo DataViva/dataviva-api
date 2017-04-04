@@ -352,6 +352,8 @@ def load_municipalities():
     )
 
     municipalities = {}
+    microregions = {}
+    mesoregions = {}
 
     for _, row in df.iterrows():
         municipality = {
@@ -373,11 +375,18 @@ def load_municipalities():
         }
 
         municipalities[row['municipio_id']] = municipality
+        microregions[row['microrregiao_id']] = municipality['microregion']
+        mesoregions[row['mesorregiao_id']] = municipality['mesoregion']
+
         redis.set('municipality/' + str(row['municipio_id']), pickle.dumps(municipality))
+        redis.set('microregion/' + str(row['microrregiao_id']), pickle.dumps(municipality['microregion']))
+        redis.set('mesoregion/' + str(row['mesorregiao_id']), pickle.dumps(municipality['mesoregion']))
 
     redis.set('municipality', pickle.dumps(municipalities))
+    redis.set('microregion', pickle.dumps(microregions))
+    redis.set('mesoregion', pickle.dumps(mesoregions))
 
-    print "Municipalities loaded."
+    print "Municipalities, microregions and mesoregions loaded."
 
 def load_industries():
     csv = read_csv_from_s3('redshift/attrs/attrs_cnae.csv')
