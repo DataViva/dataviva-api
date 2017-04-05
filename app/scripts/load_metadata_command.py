@@ -44,6 +44,26 @@ def load_ports():
     print "Ports loaded."
 
 def load_countries():
+    csv = read_csv_from_s3('redshift/attrs/attrs_continente.csv')
+    df_continents = pd.read_csv(
+        csv,
+        sep=';',
+        header=0,
+        names=['id', 'country_id', 'name_en', 'name_pt'],
+        converters={
+            "country_id": lambda x: '%03d' % int(x)
+        }
+    )
+
+    continents = {}
+
+    for _, row in df_continents.iterrows():
+        continents[row['country_id']] =  {
+            'id': row["id"],
+            'name_en': row["name_en"],
+            'name_pt': row["name_pt"],
+        }
+
     csv = read_csv_from_s3('redshift/attrs/attrs_wld.csv')
     df = pd.read_csv(
             csv,
@@ -59,8 +79,10 @@ def load_countries():
 
     for _, row in df.iterrows():
         country = {
+            'id': row["id"],
             'name_pt': row["name_pt"],
-            'name_en': row["name_en"]
+            'name_en': row["name_en"],
+            'continent': continents.get(row["id"], {})
         }
 
         countries[row['id']] = country
@@ -247,7 +269,10 @@ def load_continent():
             csv,
             sep=';',
             header=0,
-            names=['id', 'country_id', 'name_en', 'name_pt']
+            names=['id', 'country_id', 'name_en', 'name_pt'],
+            converters={
+                "country_id": lambda x: '%03d' % int(x)
+            }
         )
 
     continents = {}
