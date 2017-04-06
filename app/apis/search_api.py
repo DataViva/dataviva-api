@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request
 from importlib import import_module
+import re
+
 
 blueprint = Blueprint('search_api', __name__, url_prefix='/search')
 
@@ -11,7 +13,7 @@ def api(model):
     Model = getattr(import_module('app.models.' + model_name), class_name)
 
     query_string = request.args.get('query')
-    query_string = re.sub('[^0-9a-zA-Z ]+', '*', query_string)
+    query_string = re.sub('[^0-9a-zA-Z ]+', '*', query_string).lower()
 
     if not query_string:
         return 'Query is missing', 400
