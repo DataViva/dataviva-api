@@ -20,6 +20,7 @@ class CnesProfessional(db.Model):
     hospital_hour               = Column(Integer, primary_key=True)
     ambulatory_hour             = Column(Integer, primary_key=True)
     health_region               = Column(String(5), primary_key=True)
+    hierarchy_level             = Column(String(2), primary_key=True)
 
     @classmethod    
     def dimensions(cls):
@@ -37,7 +38,8 @@ class CnesProfessional(db.Model):
             'cns_number',
             'professional_link',
             'sus_healthcare_professional',
-            'health_region'
+            'health_region',
+            'hierarchy_level',
         ]
 
     @classmethod
