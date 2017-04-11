@@ -38,7 +38,7 @@ class CnesBed(db.Model):
     @classmethod
     def aggregate(cls, value):
         return {
-            'beds': func.count(cls.number_existing_bed),
+            'beds': func.sum(cls.number_existing_bed),
             'number_existing_bed': func.sum(cls.number_existing_bed),
             'number_existing_contract': func.sum(cls.number_existing_contract),
             'number_sus_bed': func.sum(cls.number_sus_bed),
