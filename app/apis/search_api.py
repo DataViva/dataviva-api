@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
+
+import sys
 from flask import Blueprint, jsonify, request
 from importlib import import_module
-import re
+from unicodedata import normalize
 
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+def remove_accents(txt):
+    return normalize('NFKD', txt.decode('utf-8')).encode('ASCII','ignore')
 
 blueprint = Blueprint('search_api', __name__, url_prefix='/search')
 
@@ -13,11 +21,14 @@ def api(model):
     Model = getattr(import_module('app.models.' + model_name), class_name)
 
     query_string = request.args.get('query')
-    query_string = re.sub('[^0-9a-zA-Z ]+', '*', query_string).lower()
+    query_string = remove_accents(query_string).lower()
 
     if not query_string:
         return 'Query is missing', 400
 
-    query = Model.query.filter(Model.search.contains(query_string))
+    query = Model.query
+
+    for word in query_string.split(' '):
+        query = query.filter(Model.search.contains(word))
 
     return jsonify(data=[q.serialize() for q in query.all()])
