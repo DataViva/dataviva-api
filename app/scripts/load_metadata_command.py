@@ -668,6 +668,7 @@ class LoadMetadataCommand(Command):
         load_territories()
         load_economic_blocks()
         load_occupations()
+        load_industries()
         load_sc_course()
         load_hedu_course()
         load_attrs([
