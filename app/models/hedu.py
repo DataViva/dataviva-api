@@ -13,7 +13,7 @@ class Hedu(db.Model):
     university_campus     = Column(String(7), primary_key=True)
     funding_type          = Column(String(1), primary_key=True)
     school_type           = Column(String(1), primary_key=True)
-    course                = Column(String(6), primary_key=True)
+    hedu_course           = Column(String(6), primary_key=True)
     enrolled              = Column(String(12), primary_key=True)
     graduates             = Column(String(1), primary_key=True)
     entrants              = Column(String(1), primary_key=True)
@@ -42,7 +42,7 @@ class Hedu(db.Model):
             'university_campus',
             'funding_type',
             'school_type',
-            'course',
+            'hedu_course',
             'enrolled',
             'graduates',
             'entrants',
