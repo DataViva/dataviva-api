@@ -7,13 +7,23 @@ from app.helpers.cache_helper import api_cache_key
 
 blueprint = Blueprint('api', __name__, url_prefix='/')
 
+
+@blueprint.route('years/<dataset>/')
+@cache.cached(key_prefix=api_cache_key('years_dataset'))
+def years(dataset):
+    global Model
+    Model = get_model(dataset)
+    entities = get_columns(['year'])
+    query = Model.query.with_entities(*entities).distinct()
+    return jsonify(years=query.all())
+
+
 @blueprint.route('<dataset>/<path:path>/')
 @cache.cached(key_prefix=api_cache_key('dataset'))
 def api(dataset, path):
     global Model
-    class_name = ''.join([x.title() for x in dataset.split('_')])
-    Model = getattr(import_module('app.models.' + dataset), class_name)
-    
+    Model = get_model(dataset)
+
     dimensions = map(singularize, path.split('/'))
     if invalid_dimension(dimensions):
         return 'Error', 403
@@ -50,15 +60,25 @@ def api(dataset, path):
 
     return jsonify(data=query.all(), headers=headers)
 
+
+def get_model(dataset):
+    class_name = ''.join([x.title() for x in dataset.split('_')])
+    Model = getattr(import_module('app.models.' + dataset), class_name)
+    return Model
+
+
 def get_values(request):
     values = [v for v in request.args.getlist('value') if v in Model.values()]
     return values if len(values) else Model.values()
 
+
 def get_headers(columns, suffix=''):
     return map(lambda x: x.key + suffix, columns)
 
+
 def get_columns(dimensions):
     return [getattr(Model, dimension) for dimension in dimensions]
+
 
 def invalid_dimension(dimensions):
     return not set(dimensions).issubset(set(Model.dimensions()))
