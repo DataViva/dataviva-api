@@ -8,10 +8,13 @@ from unicodedata import normalize
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+
 def remove_accents(txt):
-    return normalize('NFKD', txt.decode('utf-8')).encode('ASCII','ignore')
+    return normalize('NFKD', txt.decode('utf-8')).encode('ASCII', 'ignore')
+
 
 blueprint = Blueprint('search_api', __name__, url_prefix='/search')
+
 
 @blueprint.route('/<string:model>')
 def api(model):

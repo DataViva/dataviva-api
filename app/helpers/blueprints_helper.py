@@ -3,6 +3,7 @@ from re import sub
 from importlib import import_module
 from inflection import singularize
 
+
 def register_blueprints(flask, package):
     package_dir = path.join(getcwd(), flask.name, package)
     module_suffix = '_' + singularize(package) + '.py'

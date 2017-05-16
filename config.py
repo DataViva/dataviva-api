@@ -1,15 +1,15 @@
-from os import getcwd, path, getenv
+from os import getenv
 
 
 class Config(object):
     DEBUG = False
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+
     REDIS_HOST = 'localhost'
     REDIS_PORT = '6379'
     REDIS_DB = '0'
-    
+
     S3_ACCESS_KEY = getenv("S3_ACCESS_KEY")
     S3_SECRET_KEY = getenv("S3_SECRET_KEY")
 

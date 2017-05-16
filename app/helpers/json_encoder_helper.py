@@ -1,6 +1,7 @@
 from decimal import Decimal
 from flask.json import JSONEncoder
 
+
 class ApiJSONEncoder(JSONEncoder):
 
     def default(self, obj):
