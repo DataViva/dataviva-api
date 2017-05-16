@@ -14,8 +14,9 @@ def years(dataset):
     global Model
     Model = get_model(dataset)
     entities = get_columns(['year'])
-    query = Model.query.with_entities(*entities).distinct()
-    return jsonify(years=query.all())
+    query = Model.query.with_entities(*entities).distinct().order_by('year')
+    query_result = [year[0] for year in query.all()]
+    return jsonify(years=query_result)
 
 
 @blueprint.route('<dataset>/<path:path>/')
