@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, func
 from app import db
 
 class Hedu(db.Model):
-    __tablename__     = 'hedu'
+    __tablename__         = 'hedu'
     year                  = Column(Integer, primary_key=True)
     region                = Column(String(1), primary_key=True)
     mesoregion            = Column(String(4), primary_key=True)
@@ -13,6 +13,7 @@ class Hedu(db.Model):
     university_campus     = Column(String(7), primary_key=True)
     funding_type          = Column(String(1), primary_key=True)
     school_type           = Column(String(1), primary_key=True)
+    hedu_course_field     = Column(String(2), primary_key=True)
     hedu_course           = Column(String(6), primary_key=True)
     enrolled              = Column(String(12), primary_key=True)
     graduates             = Column(String(1), primary_key=True)
@@ -42,6 +43,7 @@ class Hedu(db.Model):
             'university_campus',
             'funding_type',
             'school_type',
+            'hedu_course_field',
             'hedu_course',
             'enrolled',
             'graduates',
