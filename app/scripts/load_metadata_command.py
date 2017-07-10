@@ -674,6 +674,8 @@ class LoadMetadataCommand(Command):
         load_attrs([
             #hedu
             {'name': 'shift', 'csv_filename': 'attrs_shift.csv'},
+            {'name': 'funding_type', 'csv_filename': 'attrs_funding_type.csv'},
+            {'name': 'school_type', 'csv_filename': 'attrs_school_type.csv'},
             #rais and scholar
             {'name': 'ethnicity', 'csv_filename': 'attrs_etnias.csv'},
             #rais
@@ -682,9 +684,6 @@ class LoadMetadataCommand(Command):
             {'name': 'literacy', 'csv_filename': 'attrs_escolaridade.csv'},
             {'name': 'simple', 'csv_filename': 'attrs_simples.csv'},
             {'name': 'legal_nature', 'csv_filename': 'attrs_natureza_juridica.csv'},
-            #hedu
-            {'name': 'funding_type', 'csv_filename': 'attrs_funding_type.csv'},
-            {'name': 'school_type', 'csv_filename': 'attrs_school_type.csv'},
             #sc
             {'name': 'university', 'csv_filename': 'attrs_university.csv'},
             #cnes bed
