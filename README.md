@@ -1,73 +1,55 @@
-# dataviva-api
+# DataViva API
+DataViva is a research tool that provides official data about exportation, economic activity, locality, education and occupation in Brazil.
+DataViva API is built using Flask, an open source Python library for interacting with HTTP. this installation guide is written assuming a Linux or Linux-like environment.
+It uses the following technology stack:
 
+- Python
+- Flask
+- Redis
+- Amazon Redshift
 
-## Quickstart
+## Resources
+- [Documentation](https://github.com/DataViva/dataviva-api/wiki/documentation)
 
-This is how the API url looks like:
+## Installing
 
-```
-staging.dataviva.info/<dataset>/<dimension>/<another_dimension>/.../?<filters>
-```
-
-
-#### Dataset
-
-The dataset are the data available. Each dataset is represented by a model. You can see all datasets that are available [here](https://github.com/DataViva/dataviva-api/tree/master/app/models).
-
-
-#### Dimensions
-
-The dimensions are the fields where the data can be grouped. The dimensions are specificy for each dataset. You can see wich dimensions are avaliable in the respective [model](https://github.com/DataViva/dataviva-api/tree/master/app/models).
-
-
-#### Values
-
-Each model has a list of values that are returned by default. But you can specify what values you want using the parameter `value`.
+1. Clone from github (this will create dataviva folder in the current directory)
 
 ```
-http://api.staging.dataviva.info/rais/year?value=age&value=jobs
+git clone https://github.com/DataViva/dataviva-api.git
 ```
 
-#### Values
+2. [optional] Create a virtual environment. We suggest installing [virtualenv](https://pypi.python.org/pypi/virtualenv) with [virtualenvwrapper](http://virtualenvwrapper.readthedocs.io/en/latest/) especially if the machine you are using is used for many other web projects. This allows python libraries to be installed easily and specifically on a per proeject basis.
 
-Each model also has a list of values that are result of aggregate functions. You can use it as a value.
-
-```
-http://api.staging.dataviva.info/rais/year?value=age&value=jobs
-```
-
-
-#### Filters
-
-You can filter for any dimension available. For this, use the name of the dimension as key in the parameters list.
+Once this is complete, run the following to initialize your dataviva environment.
 
 ```
-http://api.staging.dataviva.info/rais/year?year=2014&state=31
+mkvirtualenv dataviva-api
+workon dataviva-api
 ```
 
-
-#### Limit
-
-You can set a limit for your data. For this, use the parameter `limit`.
-
+3. Install the required Python libraries
 
 ```
-http://api.staging.dataviva.info/rais/year?limit=1
+pip install -r requirements.txt
 ```
 
+4. Set the following environment variables
 
-#### Order
-
-You can sort your response too. For this, use the parameter `order`.
-
+*(if using virtualenv)* add the following to to the bottom of your virtualenv activate file (virtualenv_root/bin/activate).
 
 ```
-http://api.staging.dataviva.info/rais/year?order=year
-```
+export ENV=
 
-and define the sort direction with the parameter `direction`.
+export S3_ACCESS_KEY=
+export S3_SECRET_KEY=
 
+export REDIS_HOST=
+export REDIS_PORT
+export REDIS_DB
 
-```
-http://api.staging.dataviva.info/rais/year?sort=year&direction=asc
+export DATAVIVA_REDSHIFT_USER=
+export DATAVIVA_REDSHIFT_PW=
+export DATAVIVA_REDSHIFT_HOST=
+export DATAVIVA_REDSHIFT_NAME=
 ```
