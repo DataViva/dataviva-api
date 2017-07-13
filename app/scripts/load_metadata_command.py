@@ -672,6 +672,10 @@ class LoadMetadataCommand(Command):
         load_sc_course()
         load_hedu_course()
         load_attrs([
+            #hedu
+            {'name': 'shift', 'csv_filename': 'attrs_shift.csv'},
+            {'name': 'funding_type', 'csv_filename': 'attrs_funding_type.csv'},
+            {'name': 'school_type', 'csv_filename': 'attrs_school_type.csv'},
             #rais and scholar
             {'name': 'ethnicity', 'csv_filename': 'attrs_etnias.csv'},
             #rais
