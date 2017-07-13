@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, distinct
 from app import db
 
 class Sc(db.Model):
@@ -38,9 +38,12 @@ class Sc(db.Model):
     def aggregate(cls, value):
         return {
             'average_age': func.avg(cls.age),
-            'students': func.count()
+            'students': func.count(),
+            'classes': func.count(distinct(cls.sc_class)),
+            'average_class_size': func.count() / func.count(distinct(cls.sc_class)),
         }[value]
 
     @classmethod
     def values(cls):
-        return ['average_age', 'students']
+        return ['average_age', 'students', 'classes', 'average_class_size']
+
