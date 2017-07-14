@@ -684,6 +684,7 @@ class LoadMetadataCommand(Command):
             {'name': 'legal_nature', 'csv_filename': 'attrs_natureza_juridica.csv'},
             #sc
             {'name': 'university', 'csv_filename': 'attrs_university.csv'},
+            {'name': 'school', 'csv_filename': 'attrs_school.csv'},
             #cnes bed
             {'name': 'bed_type', 'csv_filename': 'attrs_tipos_leito.csv'},
             {'name': 'bed_type_per_specialty', 'csv_filename': 'attrs_cnes_codleito.csv'},
