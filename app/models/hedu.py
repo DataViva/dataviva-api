@@ -16,8 +16,8 @@ class Hedu(db.Model):
     hedu_course_field     = Column(String(2), primary_key=True)
     hedu_course           = Column(String(6), primary_key=True)
     enrolled              = Column(String(12), primary_key=True)
-    graduates             = Column(String(1), primary_key=True)
-    entrants              = Column(String(1), primary_key=True)
+    graduate              = Column(String(1), primary_key=True)
+    entrant               = Column(String(1), primary_key=True)
     academic_degree       = Column(String(2), primary_key=True)
     distance_learning     = Column(String(1), primary_key=True)
     shift                 = Column(String(2), primary_key=True)
@@ -46,8 +46,8 @@ class Hedu(db.Model):
             'hedu_course_field',
             'hedu_course',
             'enrolled',
-            'graduates',
-            'entrants',
+            'graduate',
+            'entrant',
             'academic_degree',
             'distance_learning',
             'shift',
@@ -63,12 +63,12 @@ class Hedu(db.Model):
     @classmethod
     def aggregate(cls, value):
         return {
-            'enrolled': func.count(),
-            'entrants': func.sum(cls.entrants),
-            'graduates': func.sum(cls.graduates),
+            'enrolleds': func.count(),
+            'entrants': func.sum(cls.entrant),
+            'graduates': func.sum(cls.graduate),
             'average_age': func.avg(cls.age)
         }[value]
 
     @classmethod
     def values(cls):
-        return ['enrolled', 'entrants', 'graduates', 'average_age']
+        return ['enrolleds', 'entrants', 'graduates', 'average_age']
