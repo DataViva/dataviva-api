@@ -59,6 +59,9 @@ def api(dataset, path):
     if limit:
         query = query.limit(limit)
 
+    for field, value in get_not_equal_filters(request):
+        query = query.filter(getattr(Model, field) != value)
+
     return jsonify(data=query.all(), headers=headers)
 
 
@@ -72,6 +75,9 @@ def get_values(request):
     values = [v for v in request.args.getlist('value') if v in Model.values()]
     return values if len(values) else Model.values()
 
+def get_not_equal_filters(request):
+    not_filters = [(field[:-1], request.args[field]) for field in request.args.keys() if field.endswith('!')]
+    return not_filters
 
 def get_headers(columns, suffix=''):
     return map(lambda x: x.key + suffix, columns)
