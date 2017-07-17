@@ -45,9 +45,9 @@ class Sc(db.Model):
             'students': func.count(),
             'classes': func.count(distinct(cls.sc_class)),
             'average_class_size': func.count() / func.count(distinct(cls.sc_class)),
+            'schools': func.count(distinct(cls.sc_school)),
         }[value]
 
     @classmethod
     def values(cls):
-        return ['average_age', 'students', 'classes', 'average_class_size']
-
+        return ['average_age', 'students', 'classes', 'average_class_size', 'schools']
