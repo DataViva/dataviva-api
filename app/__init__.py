@@ -17,9 +17,9 @@ redis = Redis(flask)
 manager = Manager(flask)
 cors = CORS(flask)
 cache = Cache(flask, config={
-    'CACHE_TYPE': 'redis',
-    'CACHE_KEY_PREFIX': 'dvapi',
-    'CACHE_DEFAULT_TIMEOUT': 60000000,
+    'CACHE_TYPE': flask.config['CACHE_TYPE'],
+    'CACHE_KEY_PREFIX': flask.config['CACHE_KEY_PREFIX'],
+    'CACHE_DEFAULT_TIMEOUT': flask.config['CACHE_DEFAULT_TIMEOUT'],
 })
 
 register_blueprints(flask, 'apis')
