@@ -4,6 +4,7 @@ from os import getenv
 class Config(object):
     DEBUG = False
     TESTING = False
+    HIDE_DATA = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     REDIS_HOST = 'localhost'
@@ -25,6 +26,7 @@ class Production(Config):
 
 
 class Development(Config):
+    HIDE_DATA = False
     DEBUG = True
 
 
