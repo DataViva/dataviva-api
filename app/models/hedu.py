@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, Boolean
 from app import db
 
 class Hedu(db.Model):
@@ -28,6 +28,7 @@ class Hedu(db.Model):
     municipality_of_birth = Column(String(7), primary_key=True)
     admission_year        = Column(String(4))
     admission_month       = Column(String(2))
+    hidden                = Column(Boolean)
 
 
     @classmethod

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, BigInteger, func
+from sqlalchemy import Column, Integer, String, BigInteger, func, Boolean
 from app import db
 
 class Secex(db.Model):
@@ -19,6 +19,7 @@ class Secex(db.Model):
     product         = Column(String(4), primary_key=True)
     value           = Column(BigInteger)
     kg              = Column(BigInteger)
+    hidden          = Column(Boolean)
 
     @classmethod
     def dimensions(cls):

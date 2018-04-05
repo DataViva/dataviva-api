@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, Boolean
 from app import db
 
 class CnesProfessional(db.Model):
@@ -21,8 +21,9 @@ class CnesProfessional(db.Model):
     ambulatory_hour             = Column(Integer, primary_key=True)
     health_region               = Column(String(5), primary_key=True)
     hierarchy_level             = Column(String(2), primary_key=True)
+    hidden                      = Column(Boolean)
 
-    @classmethod    
+    @classmethod
     def dimensions(cls):
         return [
             'year',

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func, distinct
+from sqlalchemy import Column, Integer, String, func, distinct, Boolean
 from app import db
 
 class Sc(db.Model):
@@ -18,6 +18,7 @@ class Sc(db.Model):
     age                       = Column(Integer)
     gender                    = Column(String(1), primary_key=True)
     ethnicity                 = Column(String(2), primary_key=True)
+    hidden                    = Column(Boolean)
 
     @classmethod
     def dimensions(cls):
