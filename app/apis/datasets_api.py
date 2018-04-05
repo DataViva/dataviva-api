@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import func, distinct
 from importlib import import_module
 from inflection import singularize
-from app import cache
+from app import cache, flask
 from app.helpers.cache_helper import api_cache_key
 
 blueprint = Blueprint('api', __name__, url_prefix='/')
@@ -15,6 +15,8 @@ def years(dataset):
     Model = get_model(dataset)
     entities = get_columns(['year'])
     query = Model.query.with_entities(*entities).distinct().order_by('year')
+    if flask.config['HIDE_DATA']:
+        query = query.filter_by(hidden=False)
     query_result = [year[0] for year in query.all()]
     return jsonify(years=query_result)
 
@@ -31,7 +33,8 @@ def api(dataset, path):
 
     filters = {k: v for k, v in request.args.to_dict().iteritems() if k in Model.dimensions()}
     counts = [c for c in map(singularize, request.args.getlist('count')) if c in Model.dimensions()]
-
+    if flask.config['HIDE_DATA']:
+        filters['hidden'] = False
     values = get_values(request)
 
     group_columns = get_columns(dimensions)
@@ -85,7 +88,6 @@ def get_headers(columns, suffix=''):
 
 def get_columns(dimensions):
     return [getattr(Model, dimension) for dimension in dimensions]
-
 
 def invalid_dimension(dimensions):
     return not set(dimensions).issubset(set(Model.dimensions()))
