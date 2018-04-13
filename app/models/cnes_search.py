@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, Boolean
 from app import db
 
 class CnesSearch(db.Model):
@@ -11,6 +11,7 @@ class CnesSearch(db.Model):
     state         = Column(String(255), primary_key=True)
     municipality  = Column(String(255), primary_key=True)
     search        = Column(String(1000), primary_key=True)
+    hidden        = Column(Boolean)
 
 
     def serialize(self):

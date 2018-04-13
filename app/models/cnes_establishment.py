@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, Boolean
 from app import db
 
 class CnesEstablishment(db.Model):
@@ -27,9 +27,10 @@ class CnesEstablishment(db.Model):
     administrative_sphere       = Column(String(2), primary_key=True)
     tax_withholding             = Column(String(2), primary_key=True)
     hierarchy_level             = Column(String(2), primary_key=True)
+    hidden                      = Column(Boolean)
 
 
-    @classmethod    
+    @classmethod
     def dimensions(cls):
         return [
             'year',

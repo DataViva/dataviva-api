@@ -4,11 +4,16 @@ from os import getenv
 class Config(object):
     DEBUG = False
     TESTING = False
+    HIDE_DATA = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    REDIS_HOST = 'localhost'
-    REDIS_PORT = '6379'
-    REDIS_DB = '0'
+    REDIS_HOST = getenv('REDIS_HOST', 'localhost')
+    REDIS_PORT = getenv('REDIS_PORT', '6379')
+    REDIS_DB = getenv('REDIS_DB', '0')
+
+    CACHE_TYPE = 'redis'
+    CACHE_KEY_PREFIX = 'api'
+    CACHE_DEFAULT_TIMEOUT = 60000000
 
     S3_ACCESS_KEY = getenv("S3_ACCESS_KEY")
     S3_SECRET_KEY = getenv("S3_SECRET_KEY")
@@ -25,6 +30,7 @@ class Production(Config):
 
 
 class Development(Config):
+    HIDE_DATA = False
     DEBUG = True
 
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, Boolean
 from app import db
 
 class CnesEquipment(db.Model):
@@ -18,8 +18,9 @@ class CnesEquipment(db.Model):
     equipment_quantity_in_use  = Column(Integer, primary_key=True)
     sus_availability_indicator = Column(String(1), primary_key=True)
     health_region              = Column(String(5), primary_key=True)
-    
-    @classmethod    
+    hidden                     = Column(Boolean)
+
+    @classmethod
     def dimensions(cls):
         return [
             'year',
