@@ -8,30 +8,11 @@ import pickle
 import pandas as pd
 from app import redis, flask
 import json
+from s3 import read_csv, save_json
 
-
-def read_csv_from_s3(filename):
-    client = boto3.client(
-        's3',
-        aws_access_key_id=flask.config['S3_ACCESS_KEY'],
-        aws_secret_access_key=flask.config['S3_SECRET_KEY']
-    )
-
-    obj = client.get_object(Bucket='dataviva-etl', Key=filename)
-    
-    return obj['Body']
-
-def save_json_on_s3(filename, object):
-    client = boto3.client(
-        's3',
-        aws_access_key_id=flask.config['S3_ACCESS_KEY'],
-        aws_secret_access_key=flask.config['S3_SECRET_KEY']
-    )
-
-    obj = client.put_object(Bucket='api-metadata/json', Key=filename, Body=object)
 
 def load_ports():
-    csv = read_csv_from_s3('redshift/attrs/attrs_porto.csv')
+    csv = read_csv('redshift/attrs/attrs_porto.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -49,13 +30,13 @@ def load_ports():
         ports[row['id']] = port
         redis.set('port/' + str(row['id']), pickle.dumps(port))
 
-    save_json_on_s3('attrs_port.json', json.dumps(ports, ensure_ascii=False))
+    save_json('attrs_port.json', json.dumps(ports, ensure_ascii=False))
     redis.set('port', pickle.dumps(ports))
 
     print "Ports loaded."
 
 def load_countries():
-    csv = read_csv_from_s3('redshift/attrs/attrs_continente.csv')
+    csv = read_csv('redshift/attrs/attrs_continente.csv')
     df_continents = pd.read_csv(
         csv,
         sep=';',
@@ -75,7 +56,7 @@ def load_countries():
             'name_pt': row["name_pt"],
         }
 
-    csv = read_csv_from_s3('redshift/attrs/attrs_wld.csv')
+    csv = read_csv('redshift/attrs/attrs_wld.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -99,13 +80,13 @@ def load_countries():
         countries[row['id']] = country
         redis.set('country/' + str(row['id']), pickle.dumps(country))
 
-    save_json_on_s3('attrs_country.json', json.dumps(countries, ensure_ascii=False))
+    save_json('attrs_country.json', json.dumps(countries, ensure_ascii=False))
     redis.set('country', pickle.dumps(countries))
 
     print "Countries loaded."
 
 def load_occupations():
-    csv = read_csv_from_s3('redshift/attrs/attrs_cbo.csv')
+    csv = read_csv('redshift/attrs/attrs_cbo.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -142,17 +123,17 @@ def load_occupations():
             redis.set('occupation_family/' + str(row['id']), pickle.dumps(occupation_family))
             occupations_family[row['id']] = occupation_family
 
-    save_json_on_s3('attrs_occupation_family.json', json.dumps(occupations_family, ensure_ascii=False))
+    save_json('attrs_occupation_family.json', json.dumps(occupations_family, ensure_ascii=False))
     redis.set('occupation_family', pickle.dumps(occupations_family))
 
-    save_json_on_s3('attrs_ocupation_group.json', json.dumps(ocupations_group, ensure_ascii=False))
+    save_json('attrs_ocupation_group.json', json.dumps(ocupations_group, ensure_ascii=False))
     redis.set('occupation_group', pickle.dumps(occupations_group))
 
     print "Occupations loaded."
 
 
 def load_products():
-    csv = read_csv_from_s3('redshift/attrs/attrs_hs.csv')
+    csv = read_csv('redshift/attrs/attrs_hs.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -208,13 +189,13 @@ def load_products():
             products[product_id] = product
             redis.set('product/' + str(product_id), pickle.dumps(product))
 
-    save_json_on_s3('attrs_product.json', json.dumps(products, ensure_ascii=False))
+    save_json('attrs_product.json', json.dumps(products, ensure_ascii=False))
     redis.set('product', pickle.dumps(products))
 
-    save_json_on_s3('attrs_product_section.json', json.dumps(product_sections, ensure_ascii=False))
+    save_json('attrs_product_section.json', json.dumps(product_sections, ensure_ascii=False))
     redis.set('product_section', pickle.dumps(product_sections))
 
-    save_json_on_s3('attrs_product_chapter.json', json.dumps(product_chapters, ensure_ascii=False))
+    save_json('attrs_product_chapter.json', json.dumps(product_chapters, ensure_ascii=False))
     redis.set('product_chapter', pickle.dumps(product_chapters))
 
     print "Products loaded."
@@ -223,7 +204,7 @@ def load_states():
     """
     Rows without ibge_id aren't saving
     """
-    csv = read_csv_from_s3('redshift/attrs/attrs_uf_ibge_mdic.csv')
+    csv = read_csv('redshift/attrs/attrs_uf_ibge_mdic.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -251,13 +232,13 @@ def load_states():
         states[row['ibge_id']] = state
         redis.set('state/' + str(row['ibge_id']), pickle.dumps(state))
 
-    save_json_on_s3('attrs_state.json', json.dumps(states, ensure_ascii=False))
+    save_json('attrs_state.json', json.dumps(states, ensure_ascii=False))
     redis.set('state', pickle.dumps(states))
 
     print "States loaded."
 
 def load_regions():
-    csv = read_csv_from_s3('redshift/attrs/attrs_regioes.csv')
+    csv = read_csv('redshift/attrs/attrs_regioes.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -279,13 +260,13 @@ def load_regions():
         regions[row['id']] = region
         redis.set('region/' + str(row['id']), pickle.dumps(region))
 
-    save_json_on_s3('attrs_region.json', json.dumps(regions, ensure_ascii=False))
+    save_json('attrs_region.json', json.dumps(regions, ensure_ascii=False))
     redis.set('region', pickle.dumps(regions))
 
     print "Regions loaded."
 
 def load_continent():
-    csv = read_csv_from_s3('redshift/attrs/attrs_continente.csv')
+    csv = read_csv('redshift/attrs/attrs_continente.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -315,13 +296,13 @@ def load_continent():
         continents[row['id']] = continent
         redis.set('continent/' + str(row['id']), pickle.dumps(continent))
 
-    save_json_on_s3('attrs_continent.json', json.dumps(continents, ensure_ascii=False))
+    save_json('attrs_continent.json', json.dumps(continents, ensure_ascii=False))
     redis.set('continent', pickle.dumps(continents))
 
     print "Continents loaded."
 
 def load_territories():
-    csv = read_csv_from_s3('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
+    csv = read_csv('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
     df = pd.read_csv(
         csv,
         sep=';',
@@ -344,13 +325,13 @@ def load_territories():
         territories[row['municipy_id']] = territory
         redis.set('territory/' + str(row['municipy_id']), pickle.dumps(territory))
 
-    save_json_on_s3('attrs_territory.json', json.dumps(territories, ensure_ascii=False))
+    save_json('attrs_territory.json', json.dumps(territories, ensure_ascii=False))
     redis.set('territory', pickle.dumps(territories))
 
     print "Territories loaded."    
 
 def load_economic_blocks():
-    csv = read_csv_from_s3('redshift/attrs/attrs_bloco_economico.csv')
+    csv = read_csv('redshift/attrs/attrs_bloco_economico.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -380,13 +361,13 @@ def load_economic_blocks():
         economic_blocks[row['id']] = economic_block
         redis.set('economic_block/' + str(row['id']), pickle.dumps(economic_block))
 
-    save_json_on_s3('attrs_economic_block.json', json.dumps(economic_blocks, ensure_ascii=False))
+    save_json('attrs_economic_block.json', json.dumps(economic_blocks, ensure_ascii=False))
     redis.set('economic_block', pickle.dumps(economic_blocks))
 
     print "Economic Blocks loaded."
 
 def load_municipalities():
-    csv = read_csv_from_s3('redshift/attrs/attrs_municipios.csv')
+    csv = read_csv('redshift/attrs/attrs_municipios.csv')
     df = pd.read_csv(
         csv,
         sep=';',
@@ -431,19 +412,19 @@ def load_municipalities():
         redis.set('microregion/' + str(row['microrregiao_id']), pickle.dumps(municipality['microregion']))
         redis.set('mesoregion/' + str(row['mesorregiao_id']), pickle.dumps(municipality['mesoregion']))
 
-    save_json_on_s3('attrs_municipality.json', json.dumps(municipalities, ensure_ascii=False))
+    save_json('attrs_municipality.json', json.dumps(municipalities, ensure_ascii=False))
     redis.set('municipality', pickle.dumps(municipalities))
 
-    save_json_on_s3('attrs_microregion.json', json.dumps(microregions, ensure_ascii=False))
+    save_json('attrs_microregion.json', json.dumps(microregions, ensure_ascii=False))
     redis.set('microregion', pickle.dumps(microregions))
 
-    save_json_on_s3('attrs_mesoregion.json', json.dumps(mesoregions, ensure_ascii=False))
+    save_json('attrs_mesoregion.json', json.dumps(mesoregions, ensure_ascii=False))
     redis.set('mesoregion', pickle.dumps(mesoregions))
 
     print "Municipalities, microregions and mesoregions loaded."
 
 def load_industries():
-    csv = read_csv_from_s3('redshift/attrs/attrs_cnae.csv')
+    csv = read_csv('redshift/attrs/attrs_cnae.csv')
     df = pd.read_csv(
         csv,
         sep=',',
@@ -509,19 +490,19 @@ def load_industries():
             redis.set('industry_class/' + str(class_id), pickle.dumps(industry_classe))
             industry_classes[class_id] = industry_classe
 
-    save_json_on_s3('attrs_industry_class.json', json.dumps(industry_classes, ensure_ascii=False))
+    save_json('attrs_industry_class.json', json.dumps(industry_classes, ensure_ascii=False))
     redis.set('industry_class', pickle.dumps(industry_classes))
 
-    save_json_on_s3('attrs_industry_division.json', json.dumps(industry_divisions, ensure_ascii=False))
+    save_json('attrs_industry_division.json', json.dumps(industry_divisions, ensure_ascii=False))
     redis.set('industry_division', pickle.dumps(industry_divisions))
 
-    save_json_on_s3('attrs_industry_section.json', json.dumps(industry_sections, ensure_ascii=False))
+    save_json('attrs_industry_section.json', json.dumps(industry_sections, ensure_ascii=False))
     redis.set('industry_section', pickle.dumps(industry_sections))
 
     print "Industries loaded."
 
 def load_sc_course():
-    csv = read_csv_from_s3('redshift/attrs/attrs_sc_course.csv')
+    csv = read_csv('redshift/attrs/attrs_sc_course.csv')
     df = pd.read_csv(
         csv,
         sep=';',
@@ -555,16 +536,16 @@ def load_sc_course():
             redis.set('sc_course/' + str(row['id']), pickle.dumps(sc_course))
             sc_courses[row['id']] = sc_course
 
-    save_json_on_s3('attrs_sc_course.json', json.dumps(sc_courses, ensure_ascii=False))
+    save_json('attrs_sc_course.json', json.dumps(sc_courses, ensure_ascii=False))
     redis.set('sc_course', pickle.dumps(sc_courses))
 
-    save_json_on_s3('attrs_sc_course_field.json', json.dumps(sc_courses_field, ensure_ascii=False))
+    save_json('attrs_sc_course_field.json', json.dumps(sc_courses_field, ensure_ascii=False))
     redis.set('sc_course_field', pickle.dumps(sc_courses_field))
 
     print "SC Courses loaded."
 
 def load_hedu_course():
-    csv = read_csv_from_s3('redshift/attrs/attrs_hedu_course.csv')
+    csv = read_csv('redshift/attrs/attrs_hedu_course.csv')
     df = pd.read_csv(
         csv,
         sep=';',
@@ -601,16 +582,16 @@ def load_hedu_course():
             redis.set('hedu_course/' + str(row['id']), pickle.dumps(hedu_course))
             hedu_courses[row['id']] = hedu_course
 
-    save_json_on_s3('attrs_hedu_course.json', json.dumps(hedu_courses, ensure_ascii=False))
+    save_json('attrs_hedu_course.json', json.dumps(hedu_courses, ensure_ascii=False))
     redis.set('hedu_course', pickle.dumps(hedu_courses))
 
-    save_json_on_s3('attrs_hedu_course_field.json', json.dumps(hedu_courses_field, ensure_ascii=False))
+    save_json('attrs_hedu_course_field.json', json.dumps(hedu_courses_field, ensure_ascii=False))
     redis.set('hedu_course_field', pickle.dumps(hedu_courses_field))
 
     print "HEDU Courses loaded."
 
 def load_inflections():
-    csv = read_csv_from_s3('redshift/attrs/attrs_infleccoes.csv')
+    csv = read_csv('redshift/attrs/attrs_infleccoes.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -631,13 +612,13 @@ def load_inflections():
         inflections[row['id']] = inflection
         redis.set('inflection/' + str(row['id']), pickle.dumps(inflection))
 
-    save_json_on_s3('attrs_inflection.json', json.dumps(inflections, ensure_ascii=False))
+    save_json('attrs_inflection.json', json.dumps(inflections, ensure_ascii=False))
     redis.set('inflection', pickle.dumps(inflections))
 
     print "Inflections loaded."
 
 def load_establishments():
-    csv = read_csv_from_s3('attrs/cnes_final.csv')
+    csv = read_csv('attrs/cnes_final.csv')
     df = pd.read_csv(
             csv,
             sep=';',
@@ -663,7 +644,7 @@ def load_establishments():
 def load_attrs(attrs):
     for attr in attrs:
         print 'Loading %s ...' % attr['name'],
-        csv = read_csv_from_s3('redshift/attrs/%s' % attr['csv_filename'])
+        csv = read_csv('redshift/attrs/%s' % attr['csv_filename'])
         df = pd.read_csv(
                 csv,
                 sep=';',
