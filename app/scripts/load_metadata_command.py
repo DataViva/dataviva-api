@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask_script import Command
-from os import getenv, environ
-from flask import jsonify
-import time
-import boto3
 import pickle
 import pandas as pd
-from app import redis, flask
+from app import redis
 import json
 from s3 import read_csv, save_json
 
