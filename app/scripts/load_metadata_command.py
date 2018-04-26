@@ -131,7 +131,6 @@ def load_occupations():
 
     print "Occupations loaded."
 
-
 def load_products():
     csv = read_csv('redshift/attrs/attrs_hs.csv')
     df = pd.read_csv(
