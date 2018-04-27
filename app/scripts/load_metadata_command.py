@@ -542,32 +542,6 @@ def load_hedu_course():
 
     print "HEDU Courses loaded."
 
-def load_inflections():
-    csv = read_csv('redshift/attrs/attrs_infleccoes.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id','name_en','name_pt','gender','plural']
-        )
-
-    inflections = {}
-
-    for _, row in df.iterrows():
-        inflection = {
-            'id': row['id'],
-            'name_en': row['name_en'],
-            'name_pt': row['name_pt'],
-            'gender': row['gender'],
-            'plural': row['plural']
-        }
-        inflections[row['id']] = inflection
-        redis.set('inflection/' + str(row['id']), pickle.dumps(inflection))
-
-    save_json('attrs_inflection.json', json.dumps(inflections, ensure_ascii=False))
-    redis.set('inflection', pickle.dumps(inflections))
-
-    print "Inflections loaded."
 
 def load_establishments():
     csv = read_csv('attrs/cnes_final.csv')
@@ -623,6 +597,39 @@ def load_attrs(attrs):
 
         print " loaded."
 
+class LoadInflections(Command):
+
+    """
+    Load Inflections metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_infleccoes.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name_en','name_pt','gender','plural']
+            )
+
+        inflections = {}
+
+        for _, row in df.iterrows():
+            inflection = {
+                'id': row['id'],
+                'name_en': row['name_en'],
+                'name_pt': row['name_pt'],
+                'gender': row['gender'],
+                'plural': row['plural']
+            }
+            inflections[row['id']] = inflection
+            redis.set('inflection/' + str(row['id']), pickle.dumps(inflection))
+
+        save_json('attrs_inflection.json', json.dumps(inflections, ensure_ascii=False))
+
+        print "Inflections loaded."
+
+
 class LoadMetadataCommand(Command):
     
     """
@@ -630,7 +637,6 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_inflections()
         load_establishments()
         load_continent()
         load_countries()
