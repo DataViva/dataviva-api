@@ -260,41 +260,46 @@ def load_regions():
 
     print "Regions loaded."
 
-def load_continent():
-    csv = read_csv('redshift/attrs/attrs_continente.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'country_id', 'name_en', 'name_pt'],
-            converters={
-                "country_id": lambda x: '%03d' % int(x)
-            }
-        )
+class LoadContinents(Command):
 
-    continents = {}
+    """
+    Load Continents metadata
+    """
 
-    for _, row in df.iterrows():
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_continente.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'country_id', 'name_en', 'name_pt'],
+                converters={
+                    "country_id": lambda x: '%03d' % int(x)
+                }
+            )
 
-        if continents.get(row["id"]):
-            continent = continents[row["id"]]
-            continent["countries"].append(row["country_id"])
-        else:
-            continent = {
-                'countries': [
-                    row["country_id"]
-                ],
-                'name_en': row["name_en"],
-                'name_pt': row["name_pt"]
-            }
+        continents = {}
 
-        continents[row['id']] = continent
-        redis.set('continent/' + str(row['id']), pickle.dumps(continent))
+        for _, row in df.iterrows():
 
-    save_json('attrs_continent.json', json.dumps(continents, ensure_ascii=False))
-    redis.set('continent', pickle.dumps(continents))
+            if continents.get(row["id"]):
+                continent = continents[row["id"]]
+                continent["countries"].append(row["country_id"])
+            else:
+                continent = {
+                    'countries': [
+                        row["country_id"]
+                    ],
+                    'name_en': row["name_en"],
+                    'name_pt': row["name_pt"]
+                }
 
-    print "Continents loaded."
+            continents[row['id']] = continent
+            redis.set('continent/' + str(row['id']), pickle.dumps(continent))
+
+        save_json('attrs_continent.json', json.dumps(continents, ensure_ascii=False))
+
+        print "Continents loaded."
 
 class LoadTerritories(Command):
 
@@ -662,7 +667,6 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_continent()
         load_countries()
         load_regions()
         load_states()
