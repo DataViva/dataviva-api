@@ -541,7 +541,7 @@ class LoadIndustries(Command):
 
         save_json('attrs_industry_section.json', json.dumps(industry_sections, ensure_ascii=False))
 
-    print "Industries loaded."
+        print "Industries loaded."
 
 class LoadHeduCourse(Command):
     
