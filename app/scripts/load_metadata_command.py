@@ -232,33 +232,38 @@ def load_states():
 
     print "States loaded."
 
-def load_regions():
-    csv = read_csv('redshift/attrs/attrs_regioes.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'abbr_en', 'name_pt', 'abbr_pt']
-        )
+class LoadRegions(Command):
 
-    regions = {}
+    """
+    Load Regions metadata
+    """
 
-    for _, row in df.iterrows():
-        region = {
-            'id': row['id'],
-            'name_en': row["name_en"],
-            'abbr_en': row['abbr_en'],
-            'name_pt': row["name_pt"],
-            'abbr_pt': row['abbr_pt'],
-        }
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_regioes.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'name_en', 'abbr_en', 'name_pt', 'abbr_pt']
+            )
 
-        regions[row['id']] = region
-        redis.set('region/' + str(row['id']), pickle.dumps(region))
+        regions = {}
 
-    save_json('attrs_region.json', json.dumps(regions, ensure_ascii=False))
-    redis.set('region', pickle.dumps(regions))
+        for _, row in df.iterrows():
+            region = {
+                'id': row['id'],
+                'name_en': row["name_en"],
+                'abbr_en': row['abbr_en'],
+                'name_pt': row["name_pt"],
+                'abbr_pt': row['abbr_pt'],
+            }
 
-    print "Regions loaded."
+            regions[row['id']] = region
+            redis.set('region/' + str(row['id']), pickle.dumps(region))
+
+        save_json('attrs_region.json', json.dumps(regions, ensure_ascii=False))
+
+        print "Regions loaded."
 
 class LoadContinents(Command):
 
@@ -668,7 +673,6 @@ class LoadMetadataCommand(Command):
 
     def run(self):
         load_countries()
-        load_regions()
         load_states()
         load_ports()
         load_products()
