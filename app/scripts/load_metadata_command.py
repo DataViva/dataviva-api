@@ -325,41 +325,46 @@ def load_territories():
 
     print "Territories loaded."    
 
-def load_economic_blocks():
-    csv = read_csv('redshift/attrs/attrs_bloco_economico.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id','name','country_id'],
-            converters={
-                "country_id": str
-            }
-        )
-    
-    economic_blocks = {}
+class LoadEconomicBlocks(Command):
 
-    for _, row in df.iterrows():
+    """
+    Load EconomicBlocks metadata
+    """
 
-        if economic_blocks.get(row["id"]):
-            economic_block = economic_blocks[row["id"]]
-            economic_block["countries"].append(row["country_id"])
-        else:
-            economic_block = {
-                'name_en': row["name"],
-                'name_pt': row["name"],
-                'countries': [
-                    row["country_id"]
-                ]
-            }
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_bloco_economico.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name','country_id'],
+                converters={
+                    "country_id": str
+                }
+            )
+        
+        economic_blocks = {}
 
-        economic_blocks[row['id']] = economic_block
-        redis.set('economic_block/' + str(row['id']), pickle.dumps(economic_block))
+        for _, row in df.iterrows():
 
-    save_json('attrs_economic_block.json', json.dumps(economic_blocks, ensure_ascii=False))
-    redis.set('economic_block', pickle.dumps(economic_blocks))
+            if economic_blocks.get(row["id"]):
+                economic_block = economic_blocks[row["id"]]
+                economic_block["countries"].append(row["country_id"])
+            else:
+                economic_block = {
+                    'name_en': row["name"],
+                    'name_pt': row["name"],
+                    'countries': [
+                        row["country_id"]
+                    ]
+                }
 
-    print "Economic Blocks loaded."
+            economic_blocks[row['id']] = economic_block
+            redis.set('economic_block/' + str(row['id']), pickle.dumps(economic_block))
+
+        save_json('attrs_economic_block.json', json.dumps(economic_blocks, ensure_ascii=False))
+
+        print "Economic Blocks loaded."
 
 class LoadMunicipalities(Command):
 
@@ -659,7 +664,6 @@ class LoadMetadataCommand(Command):
         load_ports()
         load_products()
         load_territories()
-        load_economic_blocks()
         load_occupations()
         load_attrs([
             #hedu
