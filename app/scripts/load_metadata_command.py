@@ -296,34 +296,39 @@ def load_continent():
 
     print "Continents loaded."
 
-def load_territories():
-    csv = read_csv('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
-    df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['territory','microterritory','municipy_id'],
-        converters={
-            "municipy_id": str
-        }
-    )
+class LoadTerritories(Command):
 
-    territories = {}
+    """
+    Load Territories metadata
+    """
 
-    for _, row in df.iterrows():
-        territory = {
-            'territory': row["territory"],
-            'microterritory': row["microterritory"],
-            'municipy_id': row["municipy_id"]
-        }
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
+        df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['territory','microterritory','municipy_id'],
+            converters={
+                "municipy_id": str
+            }
+        )
 
-        territories[row['municipy_id']] = territory
-        redis.set('territory/' + str(row['municipy_id']), pickle.dumps(territory))
+        territories = {}
 
-    save_json('attrs_territory.json', json.dumps(territories, ensure_ascii=False))
-    redis.set('territory', pickle.dumps(territories))
+        for _, row in df.iterrows():
+            territory = {
+                'territory': row["territory"],
+                'microterritory': row["microterritory"],
+                'municipy_id': row["municipy_id"]
+            }
 
-    print "Territories loaded."    
+            territories[row['municipy_id']] = territory
+            redis.set('territory/' + str(row['municipy_id']), pickle.dumps(territory))
+
+        save_json('attrs_territory.json', json.dumps(territories, ensure_ascii=False))
+
+        print "Territories loaded."    
 
 class LoadEconomicBlocks(Command):
 
@@ -663,7 +668,6 @@ class LoadMetadataCommand(Command):
         load_states()
         load_ports()
         load_products()
-        load_territories()
         load_occupations()
         load_attrs([
             #hedu
