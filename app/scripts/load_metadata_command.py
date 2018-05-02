@@ -195,42 +195,47 @@ def load_products():
 
     print "Products loaded."
 
-def load_states():
+class LoadStates(Command):
+
     """
-    Rows without ibge_id aren't saving
+    Load States metadata
     """
-    csv = read_csv('redshift/attrs/attrs_uf_ibge_mdic.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['mdic_name', 'mdic_id', 'ibge_id', 'uf'],
-            converters={
-                "ibge_id": str
+
+    def self(run):
+        """
+        Rows without ibge_id aren't saving
+        """
+        csv = read_csv('redshift/attrs/attrs_uf_ibge_mdic.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['mdic_name', 'mdic_id', 'ibge_id', 'uf'],
+                converters={
+                    "ibge_id": str
+                }
+            )  
+
+        states = {}
+
+        for _, row in df.iterrows():  
+            if not row['ibge_id']:
+                continue
+
+            state = {
+                'id': row['ibge_id'],
+                'name_pt': row["mdic_name"],
+                'name_en': row["mdic_name"],
+                'abbr_pt': row['uf'],
+                'abbr_en': row['uf']
             }
-        )  
 
-    states = {}
+            states[row['ibge_id']] = state
+            redis.set('state/' + str(row['ibge_id']), pickle.dumps(state))
 
-    for _, row in df.iterrows():  
-        if not row['ibge_id']:
-            continue
+        save_json('attrs_state.json', json.dumps(states, ensure_ascii=False))
 
-        state = {
-            'id': row['ibge_id'],
-            'name_pt': row["mdic_name"],
-            'name_en': row["mdic_name"],
-            'abbr_pt': row['uf'],
-            'abbr_en': row['uf']
-        }
-
-        states[row['ibge_id']] = state
-        redis.set('state/' + str(row['ibge_id']), pickle.dumps(state))
-
-    save_json('attrs_state.json', json.dumps(states, ensure_ascii=False))
-    redis.set('state', pickle.dumps(states))
-
-    print "States loaded."
+        print "States loaded."
 
 class LoadRegions(Command):
 
@@ -673,7 +678,6 @@ class LoadMetadataCommand(Command):
 
     def run(self):
         load_countries()
-        load_states()
         load_ports()
         load_products()
         load_occupations()
