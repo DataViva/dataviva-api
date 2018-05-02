@@ -623,36 +623,6 @@ class LoadEstablishments(Command):
 
         print "Establishment loaded."
 
-def load_attrs(attrs):
-    for attr in attrs:
-        print 'Loading %s ...' % attr['name'],
-        csv = read_csv('redshift/attrs/%s' % attr['csv_filename'])
-        df = pd.read_csv(
-                csv,
-                sep=';',
-                header=0,
-                converters={
-                    'id': str
-                },
-                engine='c'
-            )
-
-        items = {}
-
-        for _, row in df.iterrows():
-            item = {
-                'id': row["id"],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-            }
-
-            items[row['id']] = item
-            redis.set(attr['name'] + '/' + str(row['id']), pickle.dumps(item))
-
-        redis.set(attr['name'], pickle.dumps(items))
-
-        print " loaded."
-
 class LoadInflections(Command):
 
     """
@@ -685,6 +655,35 @@ class LoadInflections(Command):
 
         print "Inflections loaded."
 
+def load_attrs(attrs):
+    for attr in attrs:
+        print 'Loading %s ...' % attr['name'],
+        csv = read_csv('redshift/attrs/%s' % attr['csv_filename'])
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                converters={
+                    'id': str
+                },
+                engine='c'
+            )
+
+        items = {}
+
+        for _, row in df.iterrows():
+            item = {
+                'id': row["id"],
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+            }
+
+            items[row['id']] = item
+            redis.set(attr['name'] + '/' + str(row['id']), pickle.dumps(item))
+
+        redis.set(attr['name'], pickle.dumps(items))
+
+        print " loaded."
 
 class LoadMetadataCommand(Command):
     
@@ -753,3 +752,27 @@ class LoadMetadataCommand(Command):
             {'name': 'sus_healthcare_professional', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
             #comum
         ])
+
+class LoadAllMetadata(Command):
+
+    """
+    Load All metadata
+    """
+
+    def run(self):
+
+        LoadPorts().run()
+        LoadCountries().run()
+        LoadOccupations().run()
+        LoadProducts().run()
+        LoadStates().run()
+        LoadRegions().run()
+        LoadContinents().run()
+        LoadTerritories().run()
+        LoadEconomicBlocks().run()
+        LoadMunicipalities().run()
+        LoadIndustries().run()
+        LoadHeduCourse().run()
+        LoadEstablishments().run()
+        LoadInflections().run()
+        LoadMetadataCommand().run()
