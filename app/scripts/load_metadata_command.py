@@ -127,73 +127,76 @@ def load_occupations():
 
     print "Occupations loaded."
 
-def load_products():
-    csv = read_csv('redshift/attrs/attrs_hs.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id','name_pt','name_en','profundidade_id','profundidade'],
-            converters={
-                "id": str
-            }
-        )  
+class LoadProducts(Command):
 
-    products = {}
-    product_sections = {}
-    product_chapters = {}
+    """
+    Load Products metadata
+    """
 
-    for _, row in df.iterrows():
-        if row['profundidade'] == 'Seção':
-            product_section_id = row['id']
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_hs.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name_pt','name_en','profundidade_id','profundidade'],
+                converters={
+                    "id": str
+                }
+            )  
 
-            product_section = {
-                'id': product_section_id,
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-            }
+        products = {}
+        product_sections = {}
+        product_chapters = {}
 
-            redis.set('product_section/' + str(product_section_id), pickle.dumps(product_section))
-            product_sections[product_section_id] = product_section
+        for _, row in df.iterrows():
+            if row['profundidade'] == 'Seção':
+                product_section_id = row['id']
 
-        elif row['profundidade'] == 'Capítulo':
-            product_chapter_id = row['id'][2:]
+                product_section = {
+                    'id': product_section_id,
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                }
 
-            product_chapter = {
-                'id': product_chapter_id,
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-            }
+                redis.set('product_section/' + str(product_section_id), pickle.dumps(product_section))
+                product_sections[product_section_id] = product_section
 
-            redis.set('product_chapter/' + str(product_chapter_id), pickle.dumps(product_chapter))
-            product_chapters[product_chapter_id] = product_chapter
+            elif row['profundidade'] == 'Capítulo':
+                product_chapter_id = row['id'][2:]
 
-    for _, row in df.iterrows():
-        if row['profundidade'] == 'Posição':
-            product_id = row['id'][2:]
-            product_section_id = row["id"][:2]
-            product_chapter_id = row["id"][2:4]
+                product_chapter = {
+                    'id': product_chapter_id,
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                }
 
-            product = {
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-                'product_section': product_sections[product_section_id],
-                'product_chapter': product_chapters[product_chapter_id],
-            }
+                redis.set('product_chapter/' + str(product_chapter_id), pickle.dumps(product_chapter))
+                product_chapters[product_chapter_id] = product_chapter
 
-            products[product_id] = product
-            redis.set('product/' + str(product_id), pickle.dumps(product))
+        for _, row in df.iterrows():
+            if row['profundidade'] == 'Posição':
+                product_id = row['id'][2:]
+                product_section_id = row["id"][:2]
+                product_chapter_id = row["id"][2:4]
 
-    save_json('attrs_product.json', json.dumps(products, ensure_ascii=False))
-    redis.set('product', pickle.dumps(products))
+                product = {
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                    'product_section': product_sections[product_section_id],
+                    'product_chapter': product_chapters[product_chapter_id],
+                }
 
-    save_json('attrs_product_section.json', json.dumps(product_sections, ensure_ascii=False))
-    redis.set('product_section', pickle.dumps(product_sections))
+                products[product_id] = product
+                redis.set('product/' + str(product_id), pickle.dumps(product))
 
-    save_json('attrs_product_chapter.json', json.dumps(product_chapters, ensure_ascii=False))
-    redis.set('product_chapter', pickle.dumps(product_chapters))
+        save_json('attrs_product.json', json.dumps(products, ensure_ascii=False))
 
-    print "Products loaded."
+        save_json('attrs_product_section.json', json.dumps(product_sections, ensure_ascii=False))
+
+        save_json('attrs_product_chapter.json', json.dumps(product_chapters, ensure_ascii=False))
+
+        print "Products loaded."
 
 class LoadStates(Command):
 
@@ -679,7 +682,6 @@ class LoadMetadataCommand(Command):
     def run(self):
         load_countries()
         load_ports()
-        load_products()
         load_occupations()
         load_attrs([
             #hedu
