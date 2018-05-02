@@ -1,5 +1,5 @@
 from app import manager
-from app.scripts import LoadMetadataCommand, LoadScCourse, LoadInflections, LoadEstablishments, LoadHeduCourse, LoadIndustries, LoadMunicipalities, LoadEconomicBlocks, LoadTerritories, LoadContinents, LoadRegions, LoadStates, LoadProducts, LoadOccupations
+from app.scripts import LoadMetadataCommand, LoadScCourse, LoadInflections, LoadEstablishments, LoadHeduCourse, LoadIndustries, LoadMunicipalities, LoadEconomicBlocks, LoadTerritories, LoadContinents, LoadRegions, LoadStates, LoadProducts, LoadOccupations, LoadCountries
 
 manager.add_command('load_metadata', LoadMetadataCommand)
 manager.add_command('load_sc_course', LoadScCourse)
@@ -15,4 +15,5 @@ manager.add_command('load_regions', LoadRegions)
 manager.add_command('load_states', LoadStates)
 manager.add_command('load_products', LoadProducts)
 manager.add_command('load_occupations', LoadOccupations)
+manager.add_command('load_countries', LoadCountries)
 manager.run()

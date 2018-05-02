@@ -31,55 +31,60 @@ def load_ports():
 
     print "Ports loaded."
 
-def load_countries():
-    csv = read_csv('redshift/attrs/attrs_continente.csv')
-    df_continents = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'country_id', 'name_en', 'name_pt'],
-        converters={
-            "country_id": lambda x: '%03d' % int(x)
-        }
-    )
+class LoadCountries(Command):
 
-    continents = {}
+    """
+    Load Countries metadata
+    """
 
-    for _, row in df_continents.iterrows():
-        continents[row['country_id']] =  {
-            'id': row["id"],
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"],
-        }
-
-    csv = read_csv('redshift/attrs/attrs_wld.csv')
-    df = pd.read_csv(
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_continente.csv')
+        df_continents = pd.read_csv(
             csv,
             sep=';',
             header=0,
-            names=['id', 'name_pt', 'name_en'],
+            names=['id', 'country_id', 'name_en', 'name_pt'],
             converters={
-                "id": str
+                "country_id": lambda x: '%03d' % int(x)
             }
         )
 
-    countries = {}
+        continents = {}
 
-    for _, row in df.iterrows():
-        country = {
-            'id': row["id"],
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"],
-            'continent': continents.get(row["id"], {})
-        }
+        for _, row in df_continents.iterrows():
+            continents[row['country_id']] =  {
+                'id': row["id"],
+                'name_en': row["name_en"],
+                'name_pt': row["name_pt"],
+            }
 
-        countries[row['id']] = country
-        redis.set('country/' + str(row['id']), pickle.dumps(country))
+        csv = read_csv('redshift/attrs/attrs_wld.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'name_pt', 'name_en'],
+                converters={
+                    "id": str
+                }
+            )
 
-    save_json('attrs_country.json', json.dumps(countries, ensure_ascii=False))
-    redis.set('country', pickle.dumps(countries))
+        countries = {}
 
-    print "Countries loaded."
+        for _, row in df.iterrows():
+            country = {
+                'id': row["id"],
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+                'continent': continents.get(row["id"], {})
+            }
+
+            countries[row['id']] = country
+            redis.set('country/' + str(row['id']), pickle.dumps(country))
+
+        save_json('attrs_country.json', json.dumps(countries, ensure_ascii=False))
+
+        print "Countries loaded."
 
 class LoadOccupations(Command):
 
@@ -684,7 +689,6 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_countries()
         load_ports()
         load_attrs([
             #hedu
