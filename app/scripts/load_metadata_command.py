@@ -542,30 +542,35 @@ def load_hedu_course():
 
     print "HEDU Courses loaded."
 
+class LoadEstablishments(Command):
 
-def load_establishments():
-    csv = read_csv('attrs/cnes_final.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'name_pt'],
-            converters={
-                'id': str,
+    """
+    Load Establishments metadata
+    """
+
+    def run(self):
+        csv = read_csv('attrs/cnes_final.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'name_en', 'name_pt'],
+                converters={
+                    'id': str,
+                }
+            )
+
+        for _, row in df.iterrows():
+
+            establishment = {
+                'id': row['id'],
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
             }
-        )
 
-    for _, row in df.iterrows():
+            redis.set('establishment/' + str(row['id']), pickle.dumps(establishment))
 
-        establishment = {
-            'id': row['id'],
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"],
-        }
-
-        redis.set('establishment/' + str(row['id']), pickle.dumps(establishment))
-
-    print "Establishment loaded."
+        print "Establishment loaded."
 
 def load_attrs(attrs):
     for attr in attrs:
@@ -637,7 +642,6 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_establishments()
         load_continent()
         load_countries()
         load_regions()
