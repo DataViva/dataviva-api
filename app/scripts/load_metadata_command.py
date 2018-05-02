@@ -496,51 +496,55 @@ def load_industries():
 
     print "Industries loaded."
 
-def load_hedu_course():
-    csv = read_csv('redshift/attrs/attrs_hedu_course.csv')
-    df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_en', 'name_pt'],
-        converters={
-            "id": str
-        }
-    )
+class LoadHeduCourse(Command):
+    
+    """
+    Load HEDU Course metadata
+    """
 
-    hedu_courses = {}
-    hedu_courses_field = {}
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 2:
-            hedu_course_field = {
-                'id': row['id'],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_hedu_course.csv')
+        df = pd.read_csv(
+            csv,
+            sep=';',
+            header=0,
+            names=['id', 'name_en', 'name_pt'],
+            converters={
+                "id": str
             }
+        )
 
-            redis.set('hedu_course_field/' + str(row['id']), pickle.dumps(hedu_course_field))
-            hedu_courses_field[row['id']] = hedu_course_field
+        hedu_courses = {}
+        hedu_courses_field = {}
 
-    for _, row in df.iterrows():
-        if len(row['id']) == 6:
-            hedu_course = {
-                'id': row['id'],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-                'hedu_course_field': hedu_courses_field[row['id'][:2]]
-            }
+        for _, row in df.iterrows():
+            if len(row['id']) == 2:
+                hedu_course_field = {
+                    'id': row['id'],
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                }
 
-            redis.set('hedu_course/' + str(row['id']), pickle.dumps(hedu_course))
-            hedu_courses[row['id']] = hedu_course
+                redis.set('hedu_course_field/' + str(row['id']), pickle.dumps(hedu_course_field))
+                hedu_courses_field[row['id']] = hedu_course_field
 
-    save_json('attrs_hedu_course.json', json.dumps(hedu_courses, ensure_ascii=False))
-    redis.set('hedu_course', pickle.dumps(hedu_courses))
+        for _, row in df.iterrows():
+            if len(row['id']) == 6:
+                hedu_course = {
+                    'id': row['id'],
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                    'hedu_course_field': hedu_courses_field[row['id'][:2]]
+                }
 
-    save_json('attrs_hedu_course_field.json', json.dumps(hedu_courses_field, ensure_ascii=False))
-    redis.set('hedu_course_field', pickle.dumps(hedu_courses_field))
+                redis.set('hedu_course/' + str(row['id']), pickle.dumps(hedu_course))
+                hedu_courses[row['id']] = hedu_course
 
-    print "HEDU Courses loaded."
+        save_json('attrs_hedu_course.json', json.dumps(hedu_courses, ensure_ascii=False))
+
+        save_json('attrs_hedu_course_field.json', json.dumps(hedu_courses_field, ensure_ascii=False))
+
+        print "HEDU Courses loaded."
 
 class LoadEstablishments(Command):
 
@@ -653,7 +657,6 @@ class LoadMetadataCommand(Command):
         load_economic_blocks()
         load_occupations()
         load_industries()
-        load_hedu_course()
         load_attrs([
             #hedu
             {'name': 'shift', 'csv_filename': 'attrs_shift.csv'},
