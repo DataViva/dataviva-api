@@ -6,30 +6,34 @@ from app import redis
 import json
 from s3 import read_csv, save_json
 
+class LoadPorts(Command):
 
-def load_ports():
-    csv = read_csv('redshift/attrs/attrs_porto.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id','name','state']
-        )
+    """
+    Load Ports metadata
+    """
 
-    ports = {}
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_porto.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name','state']
+            )
 
-    for _, row in df.iterrows():
-        port = {
-            'name_pt': row["name"] + ' - ' + row["state"],
-            'name_en': row["name"] + ' - ' + row["state"]
-        }
-        ports[row['id']] = port
-        redis.set('port/' + str(row['id']), pickle.dumps(port))
+        ports = {}
 
-    save_json('attrs_port.json', json.dumps(ports, ensure_ascii=False))
-    redis.set('port', pickle.dumps(ports))
+        for _, row in df.iterrows():
+            port = {
+                'name_pt': row["name"] + ' - ' + row["state"],
+                'name_en': row["name"] + ' - ' + row["state"]
+            }
+            ports[row['id']] = port
+            redis.set('port/' + str(row['id']), pickle.dumps(port))
 
-    print "Ports loaded."
+        save_json('attrs_port.json', json.dumps(ports, ensure_ascii=False))
+
+        print "Ports loaded."
 
 class LoadCountries(Command):
 
@@ -689,7 +693,6 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_ports()
         load_attrs([
             #hedu
             {'name': 'shift', 'csv_filename': 'attrs_shift.csv'},
