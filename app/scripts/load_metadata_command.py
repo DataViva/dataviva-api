@@ -681,7 +681,7 @@ def load_attrs(attrs):
             items[row['id']] = item
             redis.set(attr['name'] + '/' + str(row['id']), pickle.dumps(item))
 
-        redis.set(attr['name'], pickle.dumps(items))
+        save_json('attrs_' + attr['name'] + '.json', json.dumps(items, ensure_ascii=False))
 
         print " loaded."
 
