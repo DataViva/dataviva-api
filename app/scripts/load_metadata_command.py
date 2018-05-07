@@ -217,7 +217,7 @@ class LoadStates(Command):
     Load States metadata
     """
 
-    def self(run):
+    def run(self):
         """
         Rows without ibge_id aren't saving
         """
