@@ -21,4 +21,4 @@ def save_json(filename, object):
         aws_secret_access_key=flask.config['S3_SECRET_KEY'],
     )
 
-    obj = client.put_object(Bucket='api-metadata', Key="json/{}".format(filename), Body=object)
+    obj = client.put_object(Bucket='api-metadata', Key=filename, Body=object)
