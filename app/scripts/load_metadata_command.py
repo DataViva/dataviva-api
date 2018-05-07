@@ -136,7 +136,7 @@ class LoadOccupations(Command):
 
         save_json('attrs_occupation_family.json', json.dumps(occupations_family, ensure_ascii=False))
 
-        save_json('attrs_ocupation_group.json', json.dumps(ocupations_group, ensure_ascii=False))
+        save_json('attrs_occupation_group.json', json.dumps(occupations_group, ensure_ascii=False))
 
         print "Occupations loaded."
 
