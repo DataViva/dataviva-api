@@ -669,7 +669,7 @@ def load_attrs(attrs):
                 engine='c'
             )
 
-        items = {}
+        items = '{'
 
         for _, row in df.iterrows():
             item = {
@@ -678,10 +678,16 @@ def load_attrs(attrs):
                 'name_en': row["name_en"],
             }
 
-            items[row['id']] = item
+            if items == '{':
+                items = '{}\"{}\": {}'.format(items, row['id'], json.dumps(item, ensure_ascii=False))
+            else:
+                items = '{}, \"{}\": {}'.format(items, row['id'], json.dumps(item, ensure_ascii=False))
+
             redis.set(attr['name'] + '/' + str(row['id']), pickle.dumps(item))
 
-        save_json('attrs_' + attr['name'] + '.json', json.dumps(items, ensure_ascii=False))
+        items = items + '}'
+
+        save_json('attrs_' + attr['name'] + '.json', items)
 
         print " loaded."
 
