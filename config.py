@@ -17,6 +17,7 @@ class Config(object):
 
     S3_ACCESS_KEY = getenv("S3_ACCESS_KEY")
     S3_SECRET_KEY = getenv("S3_SECRET_KEY")
+    S3_PUBLIC_BUCKET_URL = getenv("S3_PUBLIC_BUCKET_URL")
 
     SQLALCHEMY_DATABASE_URI = "redshift+psycopg2://{0}:{1}@{2}/{3}".format(
         getenv("DATAVIVA_REDSHIFT_USER"),
