@@ -6,263 +6,44 @@ from app import redis
 import json
 from s3 import read_csv, save_json
 
+class LoadPorts(Command):
 
-def load_ports():
-    csv = read_csv('redshift/attrs/attrs_porto.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id','name','state']
-        )
-
-    ports = {}
-
-    for _, row in df.iterrows():
-        port = {
-            'name_pt': row["name"] + ' - ' + row["state"],
-            'name_en': row["name"] + ' - ' + row["state"]
-        }
-        ports[row['id']] = port
-        redis.set('port/' + str(row['id']), pickle.dumps(port))
-
-    save_json('attrs_port.json', json.dumps(ports, ensure_ascii=False))
-    redis.set('port', pickle.dumps(ports))
-
-    print "Ports loaded."
-
-def load_countries():
-    csv = read_csv('redshift/attrs/attrs_continente.csv')
-    df_continents = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'country_id', 'name_en', 'name_pt'],
-        converters={
-            "country_id": lambda x: '%03d' % int(x)
-        }
-    )
-
-    continents = {}
-
-    for _, row in df_continents.iterrows():
-        continents[row['country_id']] =  {
-            'id': row["id"],
-            'name_en': row["name_en"],
-            'name_pt': row["name_pt"],
-        }
-
-    csv = read_csv('redshift/attrs/attrs_wld.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_pt', 'name_en'],
-            converters={
-                "id": str
-            }
-        )
-
-    countries = {}
-
-    for _, row in df.iterrows():
-        country = {
-            'id': row["id"],
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"],
-            'continent': continents.get(row["id"], {})
-        }
-
-        countries[row['id']] = country
-        redis.set('country/' + str(row['id']), pickle.dumps(country))
-
-    save_json('attrs_country.json', json.dumps(countries, ensure_ascii=False))
-    redis.set('country', pickle.dumps(countries))
-
-    print "Countries loaded."
-
-def load_occupations():
-    csv = read_csv('redshift/attrs/attrs_cbo.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id','name_en','name_pt'],
-            converters={
-                "id": str
-            }
-        )
-
-    occupations_family = {}
-    occupations_group = {}
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 1:
-            occupation_group = {
-                'id': row['id'],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"]
-            }
-
-            redis.set('occupation_group/' + str(row['id']), pickle.dumps(occupation_group))
-            occupations_group[row['id']] = occupation_group
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 4:
-            occupation_family = {
-                'id': row['id'],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-                'occupation_group': occupations_group[row['id'][0]],
-            }
-
-            redis.set('occupation_family/' + str(row['id']), pickle.dumps(occupation_family))
-            occupations_family[row['id']] = occupation_family
-
-    save_json('attrs_occupation_family.json', json.dumps(occupations_family, ensure_ascii=False))
-    redis.set('occupation_family', pickle.dumps(occupations_family))
-
-    save_json('attrs_ocupation_group.json', json.dumps(ocupations_group, ensure_ascii=False))
-    redis.set('occupation_group', pickle.dumps(occupations_group))
-
-    print "Occupations loaded."
-
-def load_products():
-    csv = read_csv('redshift/attrs/attrs_hs.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id','name_pt','name_en','profundidade_id','profundidade'],
-            converters={
-                "id": str
-            }
-        )  
-
-    products = {}
-    product_sections = {}
-    product_chapters = {}
-
-    for _, row in df.iterrows():
-        if row['profundidade'] == 'Seção':
-            product_section_id = row['id']
-
-            product_section = {
-                'id': product_section_id,
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-            }
-
-            redis.set('product_section/' + str(product_section_id), pickle.dumps(product_section))
-            product_sections[product_section_id] = product_section
-
-        elif row['profundidade'] == 'Capítulo':
-            product_chapter_id = row['id'][2:]
-
-            product_chapter = {
-                'id': product_chapter_id,
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-            }
-
-            redis.set('product_chapter/' + str(product_chapter_id), pickle.dumps(product_chapter))
-            product_chapters[product_chapter_id] = product_chapter
-
-    for _, row in df.iterrows():
-        if row['profundidade'] == 'Posição':
-            product_id = row['id'][2:]
-            product_section_id = row["id"][:2]
-            product_chapter_id = row["id"][2:4]
-
-            product = {
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-                'product_section': product_sections[product_section_id],
-                'product_chapter': product_chapters[product_chapter_id],
-            }
-
-            products[product_id] = product
-            redis.set('product/' + str(product_id), pickle.dumps(product))
-
-    save_json('attrs_product.json', json.dumps(products, ensure_ascii=False))
-    redis.set('product', pickle.dumps(products))
-
-    save_json('attrs_product_section.json', json.dumps(product_sections, ensure_ascii=False))
-    redis.set('product_section', pickle.dumps(product_sections))
-
-    save_json('attrs_product_chapter.json', json.dumps(product_chapters, ensure_ascii=False))
-    redis.set('product_chapter', pickle.dumps(product_chapters))
-
-    print "Products loaded."
-
-def load_states():
     """
-    Rows without ibge_id aren't saving
+    Load Ports metadata
     """
-    csv = read_csv('redshift/attrs/attrs_uf_ibge_mdic.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['mdic_name', 'mdic_id', 'ibge_id', 'uf'],
-            converters={
-                "ibge_id": str
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_porto.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name','state']
+            )
+
+        ports = {}
+
+        for _, row in df.iterrows():
+            port = {
+                'name_pt': row["name"] + ' - ' + row["state"],
+                'name_en': row["name"] + ' - ' + row["state"]
             }
-        )  
+            ports[row['id']] = port
+            redis.set('port/' + str(row['id']), pickle.dumps(port))
 
-    states = {}
+        save_json('attrs_port.json', json.dumps(ports, ensure_ascii=False))
 
-    for _, row in df.iterrows():  
-        if not row['ibge_id']:
-            continue
+        print "Ports loaded."
 
-        state = {
-            'id': row['ibge_id'],
-            'name_pt': row["mdic_name"],
-            'name_en': row["mdic_name"],
-            'abbr_pt': row['uf'],
-            'abbr_en': row['uf']
-        }
+class LoadCountries(Command):
 
-        states[row['ibge_id']] = state
-        redis.set('state/' + str(row['ibge_id']), pickle.dumps(state))
+    """
+    Load Countries metadata
+    """
 
-    save_json('attrs_state.json', json.dumps(states, ensure_ascii=False))
-    redis.set('state', pickle.dumps(states))
-
-    print "States loaded."
-
-def load_regions():
-    csv = read_csv('redshift/attrs/attrs_regioes.csv')
-    df = pd.read_csv(
-            csv,
-            sep=';',
-            header=0,
-            names=['id', 'name_en', 'abbr_en', 'name_pt', 'abbr_pt']
-        )
-
-    regions = {}
-
-    for _, row in df.iterrows():
-        region = {
-            'id': row['id'],
-            'name_en': row["name_en"],
-            'abbr_en': row['abbr_en'],
-            'name_pt': row["name_pt"],
-            'abbr_pt': row['abbr_pt'],
-        }
-
-        regions[row['id']] = region
-        redis.set('region/' + str(row['id']), pickle.dumps(region))
-
-    save_json('attrs_region.json', json.dumps(regions, ensure_ascii=False))
-    redis.set('region', pickle.dumps(regions))
-
-    print "Regions loaded."
-
-def load_continent():
-    csv = read_csv('redshift/attrs/attrs_continente.csv')
-    df = pd.read_csv(
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_continente.csv')
+        df_continents = pd.read_csv(
             csv,
             sep=';',
             header=0,
@@ -272,326 +53,607 @@ def load_continent():
             }
         )
 
-    continents = {}
+        continents = {}
 
-    for _, row in df.iterrows():
-
-        if continents.get(row["id"]):
-            continent = continents[row["id"]]
-            continent["countries"].append(row["country_id"])
-        else:
-            continent = {
-                'countries': [
-                    row["country_id"]
-                ],
+        for _, row in df_continents.iterrows():
+            continents[row['country_id']] =  {
+                'id': row["id"],
                 'name_en': row["name_en"],
-                'name_pt': row["name_pt"]
+                'name_pt': row["name_pt"],
             }
 
-        continents[row['id']] = continent
-        redis.set('continent/' + str(row['id']), pickle.dumps(continent))
+        csv = read_csv('redshift/attrs/attrs_wld.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'name_pt', 'name_en'],
+                converters={
+                    "id": str
+                }
+            )
 
-    save_json('attrs_continent.json', json.dumps(continents, ensure_ascii=False))
-    redis.set('continent', pickle.dumps(continents))
+        countries = {}
 
-    print "Continents loaded."
+        for _, row in df.iterrows():
+            country = {
+                'id': row["id"],
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+                'continent': continents.get(row["id"], {})
+            }
 
-def load_territories():
-    csv = read_csv('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
-    df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['territory','microterritory','municipy_id'],
-        converters={
-            "municipy_id": str
-        }
-    )
+            countries[row['id']] = country
+            redis.set('country/' + str(row['id']), pickle.dumps(country))
 
-    territories = {}
+        save_json('attrs_country.json', json.dumps(countries, ensure_ascii=False))
 
-    for _, row in df.iterrows():
-        territory = {
-            'territory': row["territory"],
-            'microterritory': row["microterritory"],
-            'municipy_id': row["municipy_id"]
-        }
+        print "Countries loaded."
 
-        territories[row['municipy_id']] = territory
-        redis.set('territory/' + str(row['municipy_id']), pickle.dumps(territory))
+class LoadOccupations(Command):
 
-    save_json('attrs_territory.json', json.dumps(territories, ensure_ascii=False))
-    redis.set('territory', pickle.dumps(territories))
+    """
+    Load Occupations metadata
+    """
 
-    print "Territories loaded."    
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_cbo.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name_en','name_pt'],
+                converters={
+                    "id": str
+                }
+            )
 
-def load_economic_blocks():
-    csv = read_csv('redshift/attrs/attrs_bloco_economico.csv')
-    df = pd.read_csv(
+        occupations_family = {}
+        occupations_group = {}
+
+        for _, row in df.iterrows():
+            if len(row['id']) == 1:
+                occupation_group = {
+                    'id': row['id'],
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"]
+                }
+
+                redis.set('occupation_group/' + str(row['id']), pickle.dumps(occupation_group))
+                occupations_group[row['id']] = occupation_group
+
+        for _, row in df.iterrows():
+            if len(row['id']) == 4:
+                occupation_family = {
+                    'id': row['id'],
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                    'occupation_group': occupations_group[row['id'][0]],
+                }
+
+                redis.set('occupation_family/' + str(row['id']), pickle.dumps(occupation_family))
+                occupations_family[row['id']] = occupation_family
+
+        save_json('attrs_occupation_family.json', json.dumps(occupations_family, ensure_ascii=False))
+
+        save_json('attrs_occupation_group.json', json.dumps(occupations_group, ensure_ascii=False))
+
+        print "Occupations loaded."
+
+class LoadProducts(Command):
+
+    """
+    Load Products metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_hs.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name_pt','name_en','profundidade_id','profundidade'],
+                converters={
+                    "id": str
+                }
+            )  
+
+        products = {}
+        product_sections = {}
+        product_chapters = {}
+
+        for _, row in df.iterrows():
+            if row['profundidade'] == 'Seção':
+                product_section_id = row['id']
+
+                product_section = {
+                    'id': product_section_id,
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                }
+
+                redis.set('product_section/' + str(product_section_id), pickle.dumps(product_section))
+                product_sections[product_section_id] = product_section
+
+            elif row['profundidade'] == 'Capítulo':
+                product_chapter_id = row['id'][2:]
+
+                product_chapter = {
+                    'id': product_chapter_id,
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                }
+
+                redis.set('product_chapter/' + str(product_chapter_id), pickle.dumps(product_chapter))
+                product_chapters[product_chapter_id] = product_chapter
+
+        for _, row in df.iterrows():
+            if row['profundidade'] == 'Posição':
+                product_id = row['id'][2:]
+                product_section_id = row["id"][:2]
+                product_chapter_id = row["id"][2:4]
+
+                product = {
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                    'product_section': product_sections[product_section_id],
+                    'product_chapter': product_chapters[product_chapter_id],
+                }
+
+                products[product_id] = product
+                redis.set('product/' + str(product_id), pickle.dumps(product))
+
+        save_json('attrs_product.json', json.dumps(products, ensure_ascii=False))
+
+        save_json('attrs_product_section.json', json.dumps(product_sections, ensure_ascii=False))
+
+        save_json('attrs_product_chapter.json', json.dumps(product_chapters, ensure_ascii=False))
+
+        print "Products loaded."
+
+class LoadStates(Command):
+
+    """
+    Load States metadata
+    """
+
+    def run(self):
+        """
+        Rows without ibge_id aren't saving
+        """
+        csv = read_csv('redshift/attrs/attrs_uf_ibge_mdic.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['mdic_name', 'mdic_id', 'ibge_id', 'uf'],
+                converters={
+                    "ibge_id": str
+                }
+            )  
+
+        states = {}
+
+        for _, row in df.iterrows():  
+            if not row['ibge_id']:
+                continue
+
+            state = {
+                'id': row['ibge_id'],
+                'name_pt': row["mdic_name"],
+                'name_en': row["mdic_name"],
+                'abbr_pt': row['uf'],
+                'abbr_en': row['uf']
+            }
+
+            states[row['ibge_id']] = state
+            redis.set('state/' + str(row['ibge_id']), pickle.dumps(state))
+
+        save_json('attrs_state.json', json.dumps(states, ensure_ascii=False))
+
+        print "States loaded."
+
+class LoadRegions(Command):
+
+    """
+    Load Regions metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_regioes.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'name_en', 'abbr_en', 'name_pt', 'abbr_pt']
+            )
+
+        regions = {}
+
+        for _, row in df.iterrows():
+            region = {
+                'id': row['id'],
+                'name_en': row["name_en"],
+                'abbr_en': row['abbr_en'],
+                'name_pt': row["name_pt"],
+                'abbr_pt': row['abbr_pt'],
+            }
+
+            regions[row['id']] = region
+            redis.set('region/' + str(row['id']), pickle.dumps(region))
+
+        save_json('attrs_region.json', json.dumps(regions, ensure_ascii=False))
+
+        print "Regions loaded."
+
+class LoadContinents(Command):
+
+    """
+    Load Continents metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_continente.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'country_id', 'name_en', 'name_pt'],
+                converters={
+                    "country_id": lambda x: '%03d' % int(x)
+                }
+            )
+
+        continents = {}
+
+        for _, row in df.iterrows():
+
+            if continents.get(row["id"]):
+                continent = continents[row["id"]]
+                continent["countries"].append(row["country_id"])
+            else:
+                continent = {
+                    'countries': [
+                        row["country_id"]
+                    ],
+                    'name_en': row["name_en"],
+                    'name_pt': row["name_pt"]
+                }
+
+            continents[row['id']] = continent
+            redis.set('continent/' + str(row['id']), pickle.dumps(continent))
+
+        save_json('attrs_continent.json', json.dumps(continents, ensure_ascii=False))
+
+        print "Continents loaded."
+
+class LoadTerritories(Command):
+
+    """
+    Load Territories metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_territorios_de_desenvolvimento.csv')
+        df = pd.read_csv(
             csv,
             sep=';',
             header=0,
-            names=['id','name','country_id'],
+            names=['territory','microterritory','municipy_id'],
             converters={
-                "country_id": str
+                "municipy_id": str
             }
         )
-    
-    economic_blocks = {}
 
-    for _, row in df.iterrows():
+        territories = {}
 
-        if economic_blocks.get(row["id"]):
-            economic_block = economic_blocks[row["id"]]
-            economic_block["countries"].append(row["country_id"])
-        else:
-            economic_block = {
-                'name_en': row["name"],
-                'name_pt': row["name"],
-                'countries': [
-                    row["country_id"]
-                ]
+        for _, row in df.iterrows():
+            territory = {
+                'territory': row["territory"],
+                'microterritory': row["microterritory"],
+                'municipy_id': row["municipy_id"]
             }
 
-        economic_blocks[row['id']] = economic_block
-        redis.set('economic_block/' + str(row['id']), pickle.dumps(economic_block))
+            territories[row['municipy_id']] = territory
+            redis.set('territory/' + str(row['municipy_id']), pickle.dumps(territory))
 
-    save_json('attrs_economic_block.json', json.dumps(economic_blocks, ensure_ascii=False))
-    redis.set('economic_block', pickle.dumps(economic_blocks))
+        save_json('attrs_territory.json', json.dumps(territories, ensure_ascii=False))
 
-    print "Economic Blocks loaded."
+        print "Territories loaded."    
 
-def load_municipalities():
-    csv = read_csv('redshift/attrs/attrs_municipios.csv')
-    df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['uf_id', 'uf_name', 'mesorregiao_id', 'mesorregiao_name', 'microrregiao_id', 'microrregiao_name', 'municipio_id', 'municipio_name', 'municipio_id_mdic'],
-        converters={
-            "uf_id": str,
-            "mesorregiao_id": str,
-            "microrregiao_id": str,
-            "municipio_id": str
-        }
-    )
+class LoadEconomicBlocks(Command):
 
-    municipalities = {}
-    microregions = {}
-    mesoregions = {}
+    """
+    Load EconomicBlocks metadata
+    """
 
-    for _, row in df.iterrows():
-        municipality = {
-            'id': row['municipio_id'],
-            'name_pt': row["municipio_name"],
-            'name_en': row["municipio_name"],
-            'mesoregion': {
-                'id': row["mesorregiao_id"],
-                'name_pt': row["mesorregiao_name"],
-                'name_en': row["mesorregiao_name"],
-            },
-            'microregion': {
-                'id': row["microrregiao_id"],
-                'name_pt': row["microrregiao_name"],
-                'name_en': row["microrregiao_name"],
-            },
-            'state': pickle.loads(redis.get('state/' + row['municipio_id'][:2])),
-            'region': pickle.loads(redis.get('region/' + row['municipio_id'][0])),
-        }
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_bloco_economico.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name','country_id'],
+                converters={
+                    "country_id": str
+                }
+            )
+        
+        economic_blocks = {}
 
-        municipalities[row['municipio_id']] = municipality
-        microregions[row['microrregiao_id']] = municipality['microregion']
-        mesoregions[row['mesorregiao_id']] = municipality['mesoregion']
+        for _, row in df.iterrows():
 
-        redis.set('municipality/' + str(row['municipio_id']), pickle.dumps(municipality))
-        redis.set('microregion/' + str(row['microrregiao_id']), pickle.dumps(municipality['microregion']))
-        redis.set('mesoregion/' + str(row['mesorregiao_id']), pickle.dumps(municipality['mesoregion']))
+            if economic_blocks.get(row["id"]):
+                economic_block = economic_blocks[row["id"]]
+                economic_block["countries"].append(row["country_id"])
+            else:
+                economic_block = {
+                    'name_en': row["name"],
+                    'name_pt': row["name"],
+                    'countries': [
+                        row["country_id"]
+                    ]
+                }
 
-    save_json('attrs_municipality.json', json.dumps(municipalities, ensure_ascii=False))
-    redis.set('municipality', pickle.dumps(municipalities))
+            economic_blocks[row['id']] = economic_block
+            redis.set('economic_block/' + str(row['id']), pickle.dumps(economic_block))
 
-    save_json('attrs_microregion.json', json.dumps(microregions, ensure_ascii=False))
-    redis.set('microregion', pickle.dumps(microregions))
+        save_json('attrs_economic_block.json', json.dumps(economic_blocks, ensure_ascii=False))
 
-    save_json('attrs_mesoregion.json', json.dumps(mesoregions, ensure_ascii=False))
-    redis.set('mesoregion', pickle.dumps(mesoregions))
+        print "Economic Blocks loaded."
 
-    print "Municipalities, microregions and mesoregions loaded."
+class LoadMunicipalities(Command):
 
-def load_industries():
-    csv = read_csv('redshift/attrs/attrs_cnae.csv')
-    df = pd.read_csv(
-        csv,
-        sep=',',
-        header=0,
-        names=['id','name_en','name_pt'],
-        converters={
-            "id": str
-        }
-    )
+    """
+    Load Municipalities metadata
+    """
 
-    industry_sections = {}
-    industry_divisions = {}
-    industry_classes = {}
-
-    industry_classes['-1'] = {
-        'name_pt': 'Não definido',
-        'name_en': 'Undefined'
-    }
-
-    industry_sections['0'] = {
-        'name_pt': 'Não definido',
-        'name_en': 'Undefined'
-    }
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 1:
-            industry_section = {
-                'id': row['id'],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"]
-            }
-
-            redis.set('industry_section/' + str(row['id']), pickle.dumps(industry_section))
-            industry_sections[row['id']] = industry_section
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 3:
-            division_id = row['id'][1:3]
-
-            industry_division = {
-                'id': division_id,
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-                'industry_section': row["id"][0]
-            }
-
-
-            redis.set('industry_division/' + str(division_id), pickle.dumps(industry_division))
-            industry_divisions[division_id] = industry_division
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 6:
-            class_id = row["id"][1:]
-
-            industry_classe = {
-                'id': class_id,
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-                'industry_section': industry_sections[row["id"][0]],
-                'industry_division': industry_divisions[row["id"][1:3]]
-            }
-
-            redis.set('industry_class/' + str(class_id), pickle.dumps(industry_classe))
-            industry_classes[class_id] = industry_classe
-
-    save_json('attrs_industry_class.json', json.dumps(industry_classes, ensure_ascii=False))
-    redis.set('industry_class', pickle.dumps(industry_classes))
-
-    save_json('attrs_industry_division.json', json.dumps(industry_divisions, ensure_ascii=False))
-    redis.set('industry_division', pickle.dumps(industry_divisions))
-
-    save_json('attrs_industry_section.json', json.dumps(industry_sections, ensure_ascii=False))
-    redis.set('industry_section', pickle.dumps(industry_sections))
-
-    print "Industries loaded."
-
-def load_hedu_course():
-    csv = read_csv('redshift/attrs/attrs_hedu_course.csv')
-    df = pd.read_csv(
-        csv,
-        sep=';',
-        header=0,
-        names=['id', 'name_en', 'name_pt'],
-        converters={
-            "id": str
-        }
-    )
-
-    hedu_courses = {}
-    hedu_courses_field = {}
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 2:
-            hedu_course_field = {
-                'id': row['id'],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-            }
-
-            redis.set('hedu_course_field/' + str(row['id']), pickle.dumps(hedu_course_field))
-            hedu_courses_field[row['id']] = hedu_course_field
-
-    for _, row in df.iterrows():
-        if len(row['id']) == 6:
-            hedu_course = {
-                'id': row['id'],
-                'name_pt': row["name_pt"],
-                'name_en': row["name_en"],
-                'hedu_course_field': hedu_courses_field[row['id'][:2]]
-            }
-
-            redis.set('hedu_course/' + str(row['id']), pickle.dumps(hedu_course))
-            hedu_courses[row['id']] = hedu_course
-
-    save_json('attrs_hedu_course.json', json.dumps(hedu_courses, ensure_ascii=False))
-    redis.set('hedu_course', pickle.dumps(hedu_courses))
-
-    save_json('attrs_hedu_course_field.json', json.dumps(hedu_courses_field, ensure_ascii=False))
-    redis.set('hedu_course_field', pickle.dumps(hedu_courses_field))
-
-    print "HEDU Courses loaded."
-
-def load_inflections():
-    csv = read_csv('redshift/attrs/attrs_infleccoes.csv')
-    df = pd.read_csv(
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_municipios.csv')
+        df = pd.read_csv(
             csv,
             sep=';',
             header=0,
-            names=['id','name_en','name_pt','gender','plural']
+            names=['uf_id', 'uf_name', 'mesorregiao_id', 'mesorregiao_name', 'microrregiao_id', 'microrregiao_name', 'municipio_id', 'municipio_name', 'municipio_id_mdic'],
+            converters={
+                "uf_id": str,
+                "mesorregiao_id": str,
+                "microrregiao_id": str,
+                "municipio_id": str
+            }
         )
 
-    inflections = {}
+        municipalities = {}
+        microregions = {}
+        mesoregions = {}
 
-    for _, row in df.iterrows():
-        inflection = {
-            'id': row['id'],
-            'name_en': row['name_en'],
-            'name_pt': row['name_pt'],
-            'gender': row['gender'],
-            'plural': row['plural']
+        for _, row in df.iterrows():
+            municipality = {
+                'id': row['municipio_id'],
+                'name_pt': row["municipio_name"],
+                'name_en': row["municipio_name"],
+                'mesoregion': {
+                    'id': row["mesorregiao_id"],
+                    'name_pt': row["mesorregiao_name"],
+                    'name_en': row["mesorregiao_name"],
+                },
+                'microregion': {
+                    'id': row["microrregiao_id"],
+                    'name_pt': row["microrregiao_name"],
+                    'name_en': row["microrregiao_name"],
+                },
+                'state': pickle.loads(redis.get('state/' + row['municipio_id'][:2])),
+                'region': pickle.loads(redis.get('region/' + row['municipio_id'][0])),
+            }
+
+            municipalities[row['municipio_id']] = municipality
+            microregions[row['microrregiao_id']] = municipality['microregion']
+            mesoregions[row['mesorregiao_id']] = municipality['mesoregion']
+
+            redis.set('municipality/' + str(row['municipio_id']), pickle.dumps(municipality))
+            redis.set('microregion/' + str(row['microrregiao_id']), pickle.dumps(municipality['microregion']))
+            redis.set('mesoregion/' + str(row['mesorregiao_id']), pickle.dumps(municipality['mesoregion']))
+
+        save_json('attrs_municipality.json', json.dumps(municipalities, ensure_ascii=False))
+
+        save_json('attrs_microregion.json', json.dumps(microregions, ensure_ascii=False))
+
+        save_json('attrs_mesoregion.json', json.dumps(mesoregions, ensure_ascii=False))
+
+        print "Municipalities, microregions and mesoregions loaded."
+
+class LoadIndustries(Command):
+    
+    """
+    Load Industries metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_cnae.csv')
+        df = pd.read_csv(
+            csv,
+            sep=',',
+            header=0,
+            names=['id','name_en','name_pt'],
+            converters={
+                "id": str
+            }
+        )
+
+        industry_sections = {}
+        industry_divisions = {}
+        industry_classes = {}
+
+        industry_classes['-1'] = {
+            'name_pt': 'Não definido',
+            'name_en': 'Undefined'
         }
-        inflections[row['id']] = inflection
-        redis.set('inflection/' + str(row['id']), pickle.dumps(inflection))
 
-    save_json('attrs_inflection.json', json.dumps(inflections, ensure_ascii=False))
-    redis.set('inflection', pickle.dumps(inflections))
+        industry_sections['0'] = {
+            'name_pt': 'Não definido',
+            'name_en': 'Undefined'
+        }
 
-    print "Inflections loaded."
+        for _, row in df.iterrows():
+            if len(row['id']) == 1:
+                industry_section = {
+                    'id': row['id'],
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"]
+                }
 
-def load_establishments():
-    csv = read_csv('attrs/cnes_final.csv')
-    df = pd.read_csv(
+                redis.set('industry_section/' + str(row['id']), pickle.dumps(industry_section))
+                industry_sections[row['id']] = industry_section
+
+        for _, row in df.iterrows():
+            if len(row['id']) == 3:
+                division_id = row['id'][1:3]
+
+                industry_division = {
+                    'id': division_id,
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                    'industry_section': row["id"][0]
+                }
+
+
+                redis.set('industry_division/' + str(division_id), pickle.dumps(industry_division))
+                industry_divisions[division_id] = industry_division
+
+        for _, row in df.iterrows():
+            if len(row['id']) == 6:
+                class_id = row["id"][1:]
+
+                industry_classe = {
+                    'id': class_id,
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                    'industry_section': industry_sections[row["id"][0]],
+                    'industry_division': industry_divisions[row["id"][1:3]]
+                }
+
+                redis.set('industry_class/' + str(class_id), pickle.dumps(industry_classe))
+                industry_classes[class_id] = industry_classe
+
+        save_json('attrs_industry_class.json', json.dumps(industry_classes, ensure_ascii=False))
+
+        save_json('attrs_industry_division.json', json.dumps(industry_divisions, ensure_ascii=False))
+
+        save_json('attrs_industry_section.json', json.dumps(industry_sections, ensure_ascii=False))
+
+        print "Industries loaded."
+
+class LoadHeduCourse(Command):
+    
+    """
+    Load HEDU Course metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_hedu_course.csv')
+        df = pd.read_csv(
             csv,
             sep=';',
             header=0,
             names=['id', 'name_en', 'name_pt'],
             converters={
-                'id': str,
+                "id": str
             }
         )
 
-    for _, row in df.iterrows():
+        hedu_courses = {}
+        hedu_courses_field = {}
 
-        establishment = {
-            'id': row['id'],
-            'name_pt': row["name_pt"],
-            'name_en': row["name_en"],
-        }
+        for _, row in df.iterrows():
+            if len(row['id']) == 2:
+                hedu_course_field = {
+                    'id': row['id'],
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                }
 
-        redis.set('establishment/' + str(row['id']), pickle.dumps(establishment))
+                redis.set('hedu_course_field/' + str(row['id']), pickle.dumps(hedu_course_field))
+                hedu_courses_field[row['id']] = hedu_course_field
 
-    print "Establishment loaded."
+        for _, row in df.iterrows():
+            if len(row['id']) == 6:
+                hedu_course = {
+                    'id': row['id'],
+                    'name_pt': row["name_pt"],
+                    'name_en': row["name_en"],
+                    'hedu_course_field': hedu_courses_field[row['id'][:2]]
+                }
+
+                redis.set('hedu_course/' + str(row['id']), pickle.dumps(hedu_course))
+                hedu_courses[row['id']] = hedu_course
+
+        save_json('attrs_hedu_course.json', json.dumps(hedu_courses, ensure_ascii=False))
+
+        save_json('attrs_hedu_course_field.json', json.dumps(hedu_courses_field, ensure_ascii=False))
+
+        print "HEDU Courses loaded."
+
+class LoadEstablishments(Command):
+
+    """
+    Load Establishments metadata
+    """
+
+    def run(self):
+        csv = read_csv('attrs/cnes_final.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id', 'name_en', 'name_pt'],
+                converters={
+                    'id': str,
+                }
+            )
+
+        for _, row in df.iterrows():
+
+            establishment = {
+                'id': row['id'],
+                'name_pt': row["name_pt"],
+                'name_en': row["name_en"],
+            }
+
+            redis.set('establishment/' + str(row['id']), pickle.dumps(establishment))
+
+        print "Establishment loaded."
+
+class LoadInflections(Command):
+
+    """
+    Load Inflections metadata
+    """
+
+    def run(self):
+        csv = read_csv('redshift/attrs/attrs_infleccoes.csv')
+        df = pd.read_csv(
+                csv,
+                sep=';',
+                header=0,
+                names=['id','name_en','name_pt','gender','plural']
+            )
+
+        inflections = {}
+
+        for _, row in df.iterrows():
+            inflection = {
+                'id': row['id'],
+                'name_en': row['name_en'],
+                'name_pt': row['name_pt'],
+                'gender': row['gender'],
+                'plural': row['plural']
+            }
+            inflections[row['id']] = inflection
+            redis.set('inflection/' + str(row['id']), pickle.dumps(inflection))
+
+        save_json('attrs_inflection.json', json.dumps(inflections, ensure_ascii=False))
+
+        print "Inflections loaded."
 
 def load_attrs(attrs):
     for attr in attrs:
@@ -607,7 +669,7 @@ def load_attrs(attrs):
                 engine='c'
             )
 
-        items = {}
+        items = '{'
 
         for _, row in df.iterrows():
             item = {
@@ -616,10 +678,16 @@ def load_attrs(attrs):
                 'name_en': row["name_en"],
             }
 
-            items[row['id']] = item
+            if items == '{':
+                items = '{}\"{}\": {}'.format(items, row['id'], json.dumps(item, ensure_ascii=False))
+            else:
+                items = '{}, \"{}\": {}'.format(items, row['id'], json.dumps(item, ensure_ascii=False))
+
             redis.set(attr['name'] + '/' + str(row['id']), pickle.dumps(item))
 
-        redis.set(attr['name'], pickle.dumps(items))
+        items = items + '}'
+
+        save_json('attrs_' + attr['name'] + '.json', items)
 
         print " loaded."
 
@@ -630,20 +698,6 @@ class LoadMetadataCommand(Command):
     """
 
     def run(self):
-        load_inflections()
-        load_establishments()
-        load_continent()
-        load_countries()
-        load_regions()
-        load_states()
-        load_municipalities()
-        load_ports()
-        load_products()
-        load_territories()
-        load_economic_blocks()
-        load_occupations()
-        load_industries()
-        load_hedu_course()
         load_attrs([
             #hedu
             {'name': 'shift', 'csv_filename': 'attrs_shift.csv'},
@@ -704,3 +758,27 @@ class LoadMetadataCommand(Command):
             {'name': 'sus_healthcare_professional', 'csv_filename': 'attrs_cnes_prof_sus.csv'},
             #comum
         ])
+
+class LoadAllMetadata(Command):
+
+    """
+    Load All metadata
+    """
+
+    def run(self):
+
+        LoadPorts().run()
+        LoadCountries().run()
+        LoadOccupations().run()
+        LoadProducts().run()
+        LoadStates().run()
+        LoadRegions().run()
+        LoadContinents().run()
+        LoadTerritories().run()
+        LoadEconomicBlocks().run()
+        LoadMunicipalities().run()
+        LoadIndustries().run()
+        LoadHeduCourse().run()
+        LoadEstablishments().run()
+        LoadInflections().run()
+        LoadMetadataCommand().run()
