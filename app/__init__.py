@@ -16,13 +16,6 @@ db = SQLAlchemy(flask)
 redis = Redis(flask)
 manager = Manager(flask)
 cors = CORS(flask)
-cache = Cache(flask, config={
-    'CACHE_TYPE': flask.config['CACHE_TYPE'],
-    'CACHE_KEY_PREFIX': flask.config['CACHE_KEY_PREFIX'],
-    'CACHE_DEFAULT_TIMEOUT': flask.config['CACHE_DEFAULT_TIMEOUT'],
-    'CACHE_REDIS_HOST': flask.config['REDIS_HOST'],
-    'CACHE_REDIS_PORT': flask.config['REDIS_PORT'],
-    'CACHE_REDIS_DB': flask.config['REDIS_DB']
-})
+cache = Cache(flask)
 
 register_blueprints(flask, 'apis')
