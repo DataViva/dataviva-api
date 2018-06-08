@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, redirect
 from inflection import singularize
 from app import redis, flask
-import pickle
+import json
 
 blueprint = Blueprint('metadata_api', __name__, url_prefix='/metadata')
 
@@ -10,7 +10,7 @@ blueprint = Blueprint('metadata_api', __name__, url_prefix='/metadata')
 def item(data, id):
     item = "{}/{}".format(singularize(data), id)
 
-    return jsonify(pickle.loads(redis.get(item)))
+    return jsonify(json.loads(redis.get(item)))
 
 @blueprint.route('/<string:data>')
 def all(data):
