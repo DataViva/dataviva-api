@@ -10,6 +10,7 @@ from app.helpers.json_encoder_helper import ApiJSONEncoder
 
 flask = Flask(__name__)
 flask.config.from_object('config.'+ getenv('ENV', 'Development'))
+flask.config['JSON_AS_ASCII'] = False
 flask.json_encoder = ApiJSONEncoder
 
 db = SQLAlchemy(flask)
