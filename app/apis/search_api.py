@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from flask import Blueprint, jsonify, request
 from importlib import import_module
 from unicodedata import normalize
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 
 def remove_accents(txt):
