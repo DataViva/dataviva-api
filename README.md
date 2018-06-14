@@ -40,9 +40,6 @@ pip install -r requirements.txt
 ```
 export ENV=
 
-export S3_ACCESS_KEY=
-export S3_SECRET_KEY=
-
 export REDIS_HOST=
 export REDIS_PORT
 export REDIS_DB
@@ -51,6 +48,8 @@ export DATAVIVA_REDSHIFT_USER=
 export DATAVIVA_REDSHIFT_PW=
 export DATAVIVA_REDSHIFT_HOST=
 export DATAVIVA_REDSHIFT_NAME=
+
+export S3_PUBLIC_BUCKET_URL=
 ```
 
 5. Run api
