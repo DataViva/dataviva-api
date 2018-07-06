@@ -31,8 +31,8 @@ def api(dataset, path):
     if invalid_dimension(dimensions):
         return 'Error', 403
 
-    filters = {k: v for k, v in request.args.to_dict().iteritems() if k in Model.dimensions()}
-    counts = [c for c in map(singularize, request.args.getlist('count')) if c in Model.dimensions()]
+    filters = {k: v for k, v in request.args.to_dict().items() if k in Model.dimensions()}
+    counts = [c for c in list(map(singularize, request.args.getlist('count'))) if c in Model.dimensions()]
     if flask.config['HIDE_DATA']:
         filters['hidden'] = False
     values = get_values(request)
@@ -41,8 +41,9 @@ def api(dataset, path):
     count_columns = get_columns(counts)
     aggregated_values = [Model.aggregate(v) for v in values]
 
+
     headers = get_headers(group_columns) + get_headers(count_columns, '_count') + values
-    entities = group_columns + map(lambda x: func.count(distinct(x)), count_columns) + aggregated_values
+    entities = group_columns + list(map(lambda x: func.count(distinct(x)), count_columns)) + aggregated_values
     query = Model.query.with_entities(*entities).filter_by(**filters).group_by(*group_columns)
 
     direction = request.args.get('direction', '')
@@ -83,7 +84,7 @@ def get_not_equal_filters(request):
     return not_filters
 
 def get_headers(columns, suffix=''):
-    return map(lambda x: x.key + suffix, columns)
+    return list(map(lambda x: x.key + suffix, columns))
 
 
 def get_columns(dimensions):
