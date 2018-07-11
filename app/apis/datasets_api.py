@@ -27,7 +27,7 @@ def api(dataset, path):
     global Model
     Model = get_model(dataset)
 
-    dimensions = map(singularize, path.split('/'))
+    dimensions = list(map(singularize, path.split('/')))
     if invalid_dimension(dimensions):
         return 'Error', 403
 
