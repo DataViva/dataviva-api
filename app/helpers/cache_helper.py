@@ -15,5 +15,5 @@ def api_cache_key(namespace, *args, **kwargs):
             msgs = "|".join([msg[0] for msg in get_flashed_messages(with_categories=True)])
             cache_key += "/" + msgs
 
-        return cache_key
+        return cache_key.decode("utf-8")
     return gen_key
