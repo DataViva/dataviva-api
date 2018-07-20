@@ -1,11 +1,12 @@
+from importlib import import_module
 from flask import Blueprint, jsonify, request
 from sqlalchemy import func, distinct
-from importlib import import_module
 from inflection import singularize
 from app import cache, flask
 from app.helpers.cache_helper import api_cache_key
 
 blueprint = Blueprint('api', __name__, url_prefix='/')
+
 
 @blueprint.route('years/<dataset>/')
 @cache.cached(key_prefix=api_cache_key('years_dataset'))
@@ -19,18 +20,20 @@ def years(dataset):
     query_result = [year[0] for year in query.all()]
     return jsonify(years=query_result)
 
+
 @blueprint.route('<dataset>/<path:path>/')
 @cache.cached(key_prefix=api_cache_key('dataset'))
 def api(dataset, path):
     global Model
     Model = get_model(dataset)
 
-    dimensions = list(map(singularize, path.split('/')))
+    dimensions = [singularize(item) for item in path.split('/')]
     if invalid_dimension(dimensions):
         return 'Error', 403
 
     filters = {k: v for k, v in request.args.to_dict().items() if k in Model.dimensions()}
-    counts = [c for c in list(map(singularize, request.args.getlist('count'))) if c in Model.dimensions()]
+    counts = [c for c in [singularize(item) for item in request.args.getlist('count')] if c in Model.dimensions()]
+
     if flask.config['HIDE_DATA']:
         filters['hidden'] = False
     values = get_values(request)
