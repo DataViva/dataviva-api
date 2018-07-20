@@ -7,7 +7,6 @@ from app.helpers.cache_helper import api_cache_key
 
 blueprint = Blueprint('api', __name__, url_prefix='/')
 
-
 @blueprint.route('years/<dataset>/')
 @cache.cached(key_prefix=api_cache_key('years_dataset'))
 def years(dataset):
@@ -19,7 +18,6 @@ def years(dataset):
         query = query.filter_by(hidden=False)
     query_result = [year[0] for year in query.all()]
     return jsonify(years=query_result)
-
 
 @blueprint.route('<dataset>/<path:path>/')
 @cache.cached(key_prefix=api_cache_key('dataset'))
@@ -68,12 +66,10 @@ def api(dataset, path):
 
     return jsonify(data=query.all(), headers=headers)
 
-
 def get_model(dataset):
     class_name = ''.join([x.title() for x in dataset.split('_')])
     Model = getattr(import_module('app.models.' + dataset), class_name)
     return Model
-
 
 def get_values(request):
     values = [v for v in request.args.getlist('value') if v in Model.values()]

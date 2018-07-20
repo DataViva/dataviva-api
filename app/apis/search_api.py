@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, jsonify, request
 from importlib import import_module
 from unicodedata import normalize
-
-
-def remove_accents(txt):
-    return normalize('NFKD', txt.decode('utf-8')).encode('ASCII', 'ignore')
-
+from flask import Blueprint, jsonify, request
 
 blueprint = Blueprint('search_api', __name__, url_prefix='/search')
-
 
 @blueprint.route('/<string:model>')
 def api(model):
@@ -31,3 +25,6 @@ def api(model):
         query = query.filter(Model.search.contains(word))
 
     return jsonify(data=[q.serialize() for q in query.all()])
+
+def remove_accents(txt):
+    return normalize('NFKD', txt.decode('utf-8')).encode('ASCII', 'ignore')

@@ -1,24 +1,25 @@
 from sqlalchemy import Column, Integer, String, func, distinct, Boolean
 from app import db
 
+
 class Sc(db.Model):
-    __tablename__    = 'sc'
-    year                      = Column(Integer, primary_key=True)
-    region                    = Column(String(1), primary_key=True)
-    mesoregion                = Column(String(4), primary_key=True)
-    microregion               = Column(String(5), primary_key=True)
-    state                     = Column(String(2), primary_key=True)
-    municipality              = Column(String(7), primary_key=True)
-    university                = Column(String(5), primary_key=True)
-    sc_course_field           = Column(String(2), primary_key=True)
-    sc_course                 = Column(String(5), primary_key=True)
-    sc_school                 = Column(String(8), primary_key=True)
-    sc_class                  = Column(String(8), primary_key=True)
+    __tablename__ = 'sc'
+    year = Column(Integer, primary_key=True)
+    region = Column(String(1), primary_key=True)
+    mesoregion = Column(String(4), primary_key=True)
+    microregion = Column(String(5), primary_key=True)
+    state = Column(String(2), primary_key=True)
+    municipality = Column(String(7), primary_key=True)
+    university = Column(String(5), primary_key=True)
+    sc_course_field = Column(String(2), primary_key=True)
+    sc_course = Column(String(5), primary_key=True)
+    sc_school = Column(String(8), primary_key=True)
+    sc_class = Column(String(8), primary_key=True)
     administrative_dependency = Column(String(1), primary_key=True)
-    age                       = Column(Integer)
-    gender                    = Column(String(1), primary_key=True)
-    ethnicity                 = Column(String(2), primary_key=True)
-    hidden                    = Column(Boolean)
+    age = Column(Integer)
+    gender = Column(String(1), primary_key=True)
+    ethnicity = Column(String(2), primary_key=True)
+    hidden = Column(Boolean)
 
     @classmethod
     def dimensions(cls):

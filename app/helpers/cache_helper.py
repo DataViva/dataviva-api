@@ -1,8 +1,8 @@
 from flask import get_flashed_messages, request
 
 
-def api_cache_key(namespace, *args, **kwargs):
-    def gen_key(**kwargs):
+def api_cache_key(namespace, *_args, **_kwargs):
+    def gen_key(**_kwargs):
         path = request.path
         reqstr = ""
         if request.args:

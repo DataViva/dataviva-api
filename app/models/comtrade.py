@@ -1,17 +1,18 @@
 from sqlalchemy import Column, Integer, String, BigInteger, func, Boolean
 from app import db
 
+
 class Comtrade(db.Model):
-    __tablename__    = 'comtrade'
-    year             = Column(Integer, primary_key=True)
-    continent        = Column(String(2), primary_key=True)
-    country          = Column(String(3), primary_key=True)
-    product_section  = Column(String(2), primary_key=True)
+    __tablename__ = 'comtrade'
+    year = Column(Integer, primary_key=True)
+    continent = Column(String(2), primary_key=True)
+    country = Column(String(3), primary_key=True)
+    product_section = Column(String(2), primary_key=True)
     product_charpter = Column(String(2), primary_key=True)
-    product          = Column(String(4), primary_key=True)
-    weight           = Column(BigInteger)
-    value            = Column(BigInteger)
-    hidden           = Column(Boolean)
+    product = Column(String(4), primary_key=True)
+    weight = Column(BigInteger)
+    value = Column(BigInteger)
+    hidden = Column(Boolean)
 
     @classmethod
     def dimensions(cls):
