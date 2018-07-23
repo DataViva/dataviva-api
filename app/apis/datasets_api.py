@@ -42,7 +42,6 @@ def api(dataset, path):
     count_columns = get_columns(counts)
     aggregated_values = [Model.aggregate(v) for v in values]
 
-
     headers = get_headers(group_columns) + get_headers(count_columns, '_count') + values
     entities = group_columns + list(map(lambda x: func.count(distinct(x)), count_columns)) + aggregated_values
     query = Model.query.with_entities(*entities).filter_by(**filters).group_by(*group_columns)
@@ -69,18 +68,22 @@ def api(dataset, path):
 
     return jsonify(data=query.all(), headers=headers)
 
+
 def get_model(dataset):
     class_name = ''.join([x.title() for x in dataset.split('_')])
     Model = getattr(import_module('app.models.' + dataset), class_name)
     return Model
 
-def get_values(request):
-    values = [v for v in request.args.getlist('value') if v in Model.values()]
-    return values if len(values) else Model.values()
 
-def get_not_equal_filters(request):
-    not_filters = [(field[:-1], request.args[field]) for field in request.args.keys() if field.endswith('!')]
+def get_values(req):
+    values = [v for v in req.args.getlist('value') if v in Model.values()]
+    return values if values else Model.values()
+
+
+def get_not_equal_filters(req):
+    not_filters = [(field[:-1], req.args[field]) for field in req.args.keys() if field.endswith('!')]
     return not_filters
+
 
 def get_headers(columns, suffix=''):
     return list(map(lambda x: x.key + suffix, columns))
@@ -88,6 +91,7 @@ def get_headers(columns, suffix=''):
 
 def get_columns(dimensions):
     return [getattr(Model, dimension) for dimension in dimensions]
+
 
 def invalid_dimension(dimensions):
     return not set(dimensions).issubset(set(Model.dimensions()))
