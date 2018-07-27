@@ -43,7 +43,7 @@ def api(dataset, path):
     aggregated_values = [Model.aggregate(v) for v in values]
 
     headers = get_headers(group_columns) + get_headers(count_columns, '_count') + values
-    entities = group_columns + list(map(lambda x: func.count(distinct(x)), count_columns)) + aggregated_values
+    entities = group_columns + [func.count(distinct(col)) for col in count_columns] + aggregated_values
     query = Model.query.with_entities(*entities).filter_by(**filters).group_by(*group_columns)
 
     direction = request.args.get('direction', '')
@@ -86,7 +86,7 @@ def get_not_equal_filters(req):
 
 
 def get_headers(columns, suffix=''):
-    return list(map(lambda x: x.key + suffix, columns))
+    return [column.key + suffix for column in columns]
 
 
 def get_columns(dimensions):
