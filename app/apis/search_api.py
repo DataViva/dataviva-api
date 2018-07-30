@@ -9,10 +9,9 @@ blueprint = Blueprint('search_api', __name__, url_prefix='/search')
 
 @blueprint.route('/<string:model>')
 def api(model):
-    global Model
     class_name = model.title() + 'Search'
     model_name = model + '_search'
-    Model = getattr(import_module('app.models.' + model_name), class_name)
+    model = getattr(import_module('app.models.' + model_name), class_name)
 
     query_string = request.args.get('query')
     query_string = remove_accents(query_string).lower()
@@ -20,10 +19,10 @@ def api(model):
     if not query_string:
         return 'Query is missing', 400
 
-    query = Model.query
+    query = model.query
 
     for word in query_string.split(' '):
-        query = query.filter(Model.search.contains(word))
+        query = query.filter(model.search.contains(word))
 
     return jsonify(data=[q.serialize() for q in query.all()])
 
