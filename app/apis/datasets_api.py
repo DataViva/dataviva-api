@@ -32,7 +32,9 @@ def api(dataset, path):
         return 'Error', 403
 
     filters = {k: v for k, v in request.args.to_dict().items() if k in Model.dimensions()}
-    counts = [c for c in [singularize(item) for item in request.args.getlist('count')] if c in Model.dimensions()]
+    counts = [c for c
+              in [singularize(item) for item in request.args.getlist('count')]
+              if c in Model.dimensions()]
 
     if flask.config['HIDE_DATA']:
         filters['hidden'] = False
@@ -42,9 +44,14 @@ def api(dataset, path):
     count_columns = get_columns(counts)
     aggregated_values = [Model.aggregate(v) for v in values]
 
-    headers = get_headers(group_columns) + get_headers(count_columns, '_count') + values
-    entities = group_columns + [func.count(distinct(col)) for col in count_columns] + aggregated_values
-    query = Model.query.with_entities(*entities).filter_by(**filters).group_by(*group_columns)
+    headers = get_headers(group_columns)           \
+        + get_headers(count_columns, '_count') \
+        + values
+    entities = group_columns                               \
+        + [func.count(distinct(col)) for col in count_columns] \
+        + aggregated_values
+    query = Model.query.with_entities(*entities)
+    query = query.filter_by(**filters).group_by(*group_columns)
 
     direction = request.args.get('direction', '')
     order = request.args.get('order', None)
@@ -81,7 +88,9 @@ def get_values(req):
 
 
 def get_not_equal_filters(req):
-    not_filters = [(field[:-1], req.args[field]) for field in req.args.keys() if field.endswith('!')]
+    not_filters = [(field[:-1], req.args[field]) for field
+                   in req.args.keys()
+                   if field.endswith('!')]
     return not_filters
 
 

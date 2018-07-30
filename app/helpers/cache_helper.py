@@ -12,7 +12,8 @@ def api_cache_key(namespace, *_args, **_kwargs):
         cache_key = key.encode('utf-8')
 
         if get_flashed_messages():
-            msgs = "|".join([msg[0] for msg in get_flashed_messages(with_categories=True)])
+            msgs = "|".join([msg[0] for msg
+                            in get_flashed_messages(with_categories=True)])
             cache_key += "/" + msgs
 
         return cache_key.decode("utf-8")
