@@ -13,6 +13,7 @@ pylint:
     - line-too-long
     - too-few-public-methods
     - invalid-name
+    - too-many-locals
   options:
     variable-rgx: "[a-z0-9_]{1,30}$"
     argument-rgx: "[a-z0-9_]{1,30}$"

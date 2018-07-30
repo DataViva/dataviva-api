@@ -11,7 +11,6 @@ blueprint = Blueprint('api', __name__, url_prefix='/')
 @blueprint.route('years/<dataset>/')
 @cache.cached(key_prefix=api_cache_key('years_dataset'))
 def years(dataset):
-    # global model
     model = get_model(dataset)
     entities = get_columns(['year'], model)
     query = model.query.with_entities(*entities).distinct().order_by('year')
@@ -24,7 +23,6 @@ def years(dataset):
 @blueprint.route('<dataset>/<path:path>/')
 @cache.cached(key_prefix=api_cache_key('dataset'))
 def api(dataset, path):
-    # global model
     model = get_model(dataset)
 
     dimensions = [singularize(item) for item in path.split('/')]
