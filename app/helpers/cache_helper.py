@@ -1,8 +1,8 @@
 from flask import get_flashed_messages, request
 
 
-def api_cache_key(namespace, *args, **kwargs):
-    def gen_key(**kwargs):
+def api_cache_key(namespace, *_args, **_kwargs):
+    def gen_key(**_kwargs):
         path = request.path
         reqstr = ""
         if request.args:
@@ -12,7 +12,8 @@ def api_cache_key(namespace, *args, **kwargs):
         cache_key = key.encode('utf-8')
 
         if get_flashed_messages():
-            msgs = "|".join([msg[0] for msg in get_flashed_messages(with_categories=True)])
+            msgs = "|".join([msg[0] for msg
+                            in get_flashed_messages(with_categories=True)])
             cache_key += "/" + msgs
 
         return cache_key.decode("utf-8")

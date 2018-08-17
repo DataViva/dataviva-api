@@ -1,16 +1,13 @@
-from os import listdir, getcwd, path
-from re import sub
+from os import getcwd, path
 from importlib import import_module
-from inflection import singularize
+from pkgutil import walk_packages
 
 
 def register_blueprints(flask, package):
     package_dir = path.join(getcwd(), flask.name, package)
-    module_suffix = '_' + singularize(package) + '.py'
 
-    module_names = [sub('\.py$', '', c)
-                    for c in listdir(package_dir) if c.endswith(module_suffix)]
+    blueprints = [import_module(f"{flask.name}.{package}.{module.name}").blueprint
+                  for module in walk_packages([package_dir])]
 
-    for module_name in module_names:
-        module = import_module(flask.name + '.%s.%s' % (package, module_name))
-        flask.register_blueprint(module.blueprint)
+    for blueprint in blueprints:
+        flask.register_blueprint(blueprint)

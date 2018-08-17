@@ -27,6 +27,8 @@ class Config(object):
         getenv("DATAVIVA_REDSHIFT_NAME"),
     )
 
+    SQLALCHEMY_POOL_TIMEOUT=348374
+
 
 class Production(Config):
     pass
